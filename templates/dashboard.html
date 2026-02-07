@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - INVRQR</title>
+    <script src="/static/tailwind.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .red-gradient { background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800 font-sans">
+    
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-2 border-slate-200 px-4 py-2.5 shadow-sm">
+        <div class="max-w-[1600px] mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center gap-2">
+                <span class="font-black text-slate-900 tracking-tighter text-base uppercase">Inv<span class="text-red-600">QR</span></span>
+            </a>
+            <a href="/" class="text-xs font-bold text-slate-500 hover:text-red-600 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6">
+        <h1 class="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3">
+            <i class="fas fa-chart-pie text-red-600"></i> Métricas del Inventario
+        </h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase">Total Activos</p>
+                    <h2 class="text-4xl font-black text-slate-900" id="totalActivos">0</h2>
+                </div>
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-cubes"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase">Operativos (Buenos)</p>
+                    <h2 class="text-4xl font-black text-emerald-600" id="totalBuenos">0</h2>
+                </div>
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase">En Reparación / Malos</p>
+                    <h2 class="text-4xl font-black text-red-600" id="totalProblemas">0</h2>
+                </div>
+                <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-tools"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
+                <h3 class="font-bold text-slate-700 mb-4">Estado del Inventario</h3>
+                <canvas id="chartEstado"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
+                <h3 class="font-bold text-slate-700 mb-4">Top 5 Marcas</h3>
+                <canvas id="chartMarca"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 md:col-span-2">
+                <h3 class="font-bold text-slate-700 mb-4">Activos por Tipo</h3>
+                <canvas id="chartTipo"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function cargarDatos() {
+            const res = await fetch('/api/stats');
+            const data = await res.json();
+
+            // 1. Llenar Tarjetas
+            document.getElementById('totalActivos').textContent = data.total;
+            
+            const buenos = data.estados.find(e => e.label === 'Bueno')?.count || 0;
+            document.getElementById('totalBuenos').textContent = buenos;
+
+            const malos = data.estados.find(e => e.label === 'Malo')?.count || 0;
+            const reparacion = data.estados.find(e => e.label === 'En Reparación')?.count || 0;
+            document.getElementById('totalProblemas').textContent = malos + reparacion;
+
+            // 2. Gráfico Estado (Pie)
+            new Chart(document.getElementById('chartEstado'), {
+                type: 'doughnut',
+                data: {
+                    labels: data.estados.map(e => e.label),
+                    datasets: [{
+                        data: data.estados.map(e => e.count),
+                        backgroundColor: ['#10b981', '#ef4444', '#f59e0b', '#64748b']
+                    }]
+                }
+            });
+
+            // 3. Gráfico Marca (Bar)
+            new Chart(document.getElementById('chartMarca'), {
+                type: 'bar',
+                data: {
+                    labels: data.marcas.map(m => m.label),
+                    datasets: [{
+                        label: 'Cantidad',
+                        data: data.marcas.map(m => m.count),
+                        backgroundColor: '#e11d48'
+                    }]
+                }
+            });
+
+            // 4. Gráfico Tipo (Bar Horizontal)
+            new Chart(document.getElementById('chartTipo'), {
+                type: 'bar',
+                data: {
+                    labels: data.tipos.map(t => t.label),
+                    datasets: [{
+                        label: 'Cantidad',
+                        data: data.tipos.map(t => t.count),
+                        backgroundColor: '#3b82f6'
+                    }]
+                },
+                options: { indexAxis: 'y' }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarDatos);
+    </script>
+</body>
+</html>

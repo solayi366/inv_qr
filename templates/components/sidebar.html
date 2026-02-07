@@ -1,0 +1,264 @@
+<div id="sidebar-overlay" onclick="toggleSidebar()" 
+     class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none lg:hidden" aria-hidden="true">
+</div>
+
+<aside id="sidebar" 
+       class="fixed inset-y-0 left-0 z-50 flex flex-col transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) 
+              transform -translate-x-full lg:translate-x-0 lg:static 
+              w-72 border-r border-white/10 shadow-[0_0_40px_rgba(225,29,72,0.15)]"
+       style="background: linear-gradient(160deg, rgba(136, 19, 55, 0.95) 0%, rgba(80, 7, 36, 0.98) 100%); backdrop-filter: blur(24px);">
+
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-[100px] -left-[100px] w-[300px] h-[300px] bg-rose-500/20 rounded-full blur-[100px]"></div>
+        <div class="absolute top-[40%] right-[-50px] w-[200px] h-[200px] bg-blue-600/10 rounded-full blur-[80px]"></div>
+    </div>
+
+    <div class="relative h-20 flex items-center justify-between px-6 shrink-0 border-b border-white/5">
+        
+        <div class="flex items-center gap-3 overflow-hidden whitespace-nowrap transition-all duration-300" id="logo-container">
+            <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-white/20 to-white/5 border border-white/20 shadow-inner shrink-0">
+                <i class="fas fa-qrcode text-lg text-white drop-shadow-sm"></i>
+            </div>
+            <div class="flex flex-col opacity-100 transition-opacity duration-300" id="logo-text">
+                <h1 class="font-black text-xl tracking-tight text-white leading-none font-sans">INV<span class="text-rose-400">_QR</span></h1>
+            </div>
+        </div>
+
+        <button onclick="toggleDesktopMode()" class="hidden lg:flex items-center justify-center w-8 h-8 rounded-full bg-white/5 hover:bg-white/20 text-white/50 hover:text-white transition-all border border-white/5 absolute -right-4 top-6 shadow-lg backdrop-blur-md z-50">
+            <i class="fas fa-chevron-left text-xs transition-transform duration-500" id="toggle-icon"></i>
+        </button>
+
+        <button onclick="toggleSidebar()" class="lg:hidden w-8 h-8 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+            <i class="fas fa-times text-lg"></i>
+        </button>
+    </div>
+
+    <div class="relative flex-1 overflow-y-auto overflow-x-hidden py-6 px-3 space-y-8 scrollbar-hide">
+        
+        <div class="nav-group">
+            <p class="px-4 text-[9px] font-black text-rose-200/30 uppercase tracking-widest mb-2 opacity-100 transition-opacity duration-300 group-label">
+                Principal
+            </p>
+            <ul class="space-y-1">
+                <li>
+                    <a onclick="switchTab('inicio'); closeOnMobile()" id="nav-inicio" class="nav-item active tooltip-container">
+                        <div class="icon-box">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <span class="nav-text">Dashboard</span>
+                        <div class="tooltip">Dashboard</div>
+                    </a>
+                </li>
+                <li>
+                    <a onclick="switchTab('dispositivos'); closeOnMobile()" id="nav-dispositivos" class="nav-item tooltip-container">
+                        <div class="icon-box">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        <span class="nav-text">Dispositivos</span>
+                        <div class="tooltip">Equipos</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-group">
+            <p class="px-4 text-[9px] font-black text-rose-200/30 uppercase tracking-widest mb-2 opacity-100 transition-opacity duration-300 group-label">
+                Herramientas
+            </p>
+            <ul class="space-y-1">
+                <li>
+                    <a href="/crear" class="nav-item tooltip-container">
+                        <div class="icon-box">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <span class="nav-text">Nuevo Activo</span>
+                        <div class="tooltip">Crear</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="/parametros" class="nav-item tooltip-container">
+                        <div class="icon-box">
+                            <i class="fas fa-sliders-h"></i>
+                        </div>
+                        <span class="nav-text">Configuración</span>
+                        <div class="tooltip">Ajustes</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="relative p-4 border-t border-white/5 bg-black/10 backdrop-blur-xl">
+        <div class="flex items-center gap-3 p-2 rounded-xl transition-all duration-300 hover:bg-white/5 cursor-pointer group overflow-hidden">
+            <div class="relative shrink-0">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white font-bold shadow-lg ring-2 ring-white/10">
+                    {{ user[0] | upper }}
+                </div>
+                <div class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#500724] rounded-full"></div>
+            </div>
+            
+            <div class="flex-1 min-w-0 transition-opacity duration-300 opacity-100" id="user-info">
+                <p class="text-xs font-bold text-white truncate">{{ user }}</p>
+                <p class="text-[10px] text-rose-200/50 truncate">Administrador</p>
+            </div>
+
+            <a href="/logout" class="p-2 text-rose-200/30 hover:text-white hover:bg-white/10 rounded-lg transition-colors shrink-0" title="Salir">
+                <i class="fas fa-power-off"></i>
+            </a>
+        </div>
+    </div>
+</aside>
+
+<style>
+    /* Estilo Base del Ítem */
+    .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        margin-bottom: 4px;
+        border-radius: 16px;
+        color: rgba(255, 255, 255, 0.6);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        cursor: pointer;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+    /* Hover Suave */
+    .nav-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: white;
+        border-color: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateX(4px);
+    }
+
+    /* Item Activo (Estilo Apple) */
+    .nav-item.active {
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .nav-item.active .icon-box {
+        color: #f9f6f6; /* Rose 400 */
+        transform: scale(1.1);
+    }
+
+    /* Contenedor de Icono */
+    .icon-box {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    /* Tooltip Flotante (Solo aparece en modo colapsado) */
+    .tooltip {
+        position: absolute;
+        left: 60px; /* Posición inicial */
+        top: 50%;
+        transform: translateY(-50%) scale(0.9);
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: bold;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 60;
+        white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* CLASE: MODO COLAPSADO (Activada por JS) */
+    aside.collapsed {
+        width: 88px; /* Ancho reducido */
+    }
+    
+    /* Ocultar textos suavemente */
+    aside.collapsed #logo-text,
+    aside.collapsed .nav-text,
+    aside.collapsed .group-label,
+    aside.collapsed #user-info {
+        opacity: 0;
+        width: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    /* Centrar iconos */
+    aside.collapsed .nav-item {
+        justify-content: center;
+        padding: 12px 0;
+        transform: none !important; /* Quitar efecto mover al hover */
+    }
+    
+    /* Mostrar Tooltip al Hover */
+    aside.collapsed .nav-item:hover .tooltip {
+        opacity: 1;
+        left: 70px; /* Desplazamiento */
+        transform: translateY(-50%) scale(1);
+    }
+
+    /* Rotar flecha */
+    aside.collapsed #toggle-icon {
+        transform: rotate(180deg);
+    }
+</style>
+
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const body = document.body;
+
+    // --- 1. TOGGLE PARA MÓVIL (Corregido) ---
+    // Esta es la función que llama el botón hamburguesa del index.html
+    function toggleSidebar() {
+        const isClosed = sidebar.classList.contains('-translate-x-full');
+        
+        if (isClosed) {
+            // ABRIR
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            body.style.overflow = 'hidden'; // Bloquear scroll
+        } else {
+            // CERRAR
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            body.style.overflow = '';
+        }
+    }
+
+    // Cerrar al hacer click en un link (UX Móvil)
+    function closeOnMobile() {
+        if (window.innerWidth < 1024) {
+            toggleSidebar();
+        }
+    }
+
+    // --- 2. TOGGLE PARA ESCRITORIO (Modo Iconos) ---
+    function toggleDesktopMode() {
+        sidebar.classList.toggle('collapsed');
+        
+        // Guardar preferencia
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        localStorage.setItem('sidebar_mode', isCollapsed ? 'collapsed' : 'expanded');
+    }
+
+    // --- 3. RESTAURAR PREFERENCIA ---
+    document.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('sidebar_mode') === 'collapsed' && window.innerWidth >= 1024) {
+            sidebar.classList.add('collapsed');
+        }
+    });
+</script>

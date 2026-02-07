@@ -1,0 +1,16 @@
+# ZONA DE RESET (PELIGRO)
+@app.get("/sistema/reset-fabrica")
+def reset_base_de_datos(request: Request, db: Session = Depends(get_db)):
+    if not request.session.get("usuario"): return RedirectResponse("/login", status_code=303)
+    try:
+        db.query(models.ActivoTec).delete()
+        db.query(models.Modelo).delete()
+        db.query(models.Empleado).delete()
+        db.query(models.Marca).delete()
+        db.query(models.TipoEquipo).delete()
+        db.query(models.Area).delete()
+        db.commit()
+        return RedirectResponse(f"/?msg=Sistema formateado (Admin conservado)&tipo=warning", status_code=303)
+    except Exception as e:
+        db.rollback()
+        return RedirectResponse(f"/?msg=Error al limpiar: {str(e)}&tipo=danger", status_code=303)

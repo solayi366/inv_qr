@@ -98,7 +98,7 @@ Traceback (most recent call last):
   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
   File "<frozen importlib._bootstrap_external>", line 995, in exec_module
   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
-  File "/home/ubuntu/inv_qr/app/main.py", line 28, in <module>
+  File "/home/ubuntu/inv_qr/app/main.py", line 29, in <module>
     models.Base.metadata.create_all(bind=database.engine)
   File "/home/ubuntu/inv_qr/venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 5928, in create_all
     bind._run_ddl_visitor(

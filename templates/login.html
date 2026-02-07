@@ -3,49 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - Inventario</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Iniciar Sesión - SIH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3',
+                            500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 900: '#4c0519',
+                        }
+                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
     <style>
-        body { background: #b33515; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .card-login { max-width: 400px; width: 100%; border-radius: 15px; overflow: hidden; }
-        .btn-login { background-color: #333; color: white; }
-        .btn-login:hover { background-color: #000; color: white; }
+        .ruby-gradient {
+            background: radial-gradient(circle at top left, #e11d48 0%, #4c0519 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
     </style>
 </head>
-<body>
-    <div class="card card-login shadow-lg border-0">
-        <div class="card-body p-5 text-center bg-white">
-            <div class="mb-4">
-                <img src="/static/logo.png" alt="Logo" height="60" class="mb-3">
-                <h4 class="fw-bold text-dark">Acceso Administrativo</h4>
-                <p class="text-muted small">Sistema de Inventario QR</p>
-            </div>
+<body class="ruby-gradient min-h-screen flex items-center justify-center p-4 antialiased font-sans">
 
+    <div class="w-full max-w-[440px] glass-card rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden border border-white/20">
+        
+        <div class="pt-12 pb-8 px-10 text-center">
+            <div class="inline-flex p-4 bg-brand-50 rounded-3xl mb-6 shadow-sm border border-brand-100 group">
+                <img src="/static/logo.png" alt="Logo" class="h-10 w-auto group-hover:scale-110 transition-transform duration-500">
+            </div>
+            <h2 class="text-3xl font-black text-slate-900 tracking-tight mb-2">Bienvenido <span class="text-brand-600"></span></h2>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Sistema de Identificacion de Hardware</p>
+        </div>
+
+        <div class="px-10 pb-12">
             {% if error %}
-            <div class="alert alert-danger py-2 mb-3 small">
-                <i class="fas fa-exclamation-circle me-1"></i> {{ error }}
+            <div class="mb-6 p-4 bg-rose-50 border-l-4 border-brand-600 rounded-xl flex items-center gap-3 animate-bounce">
+                <i class="fas fa-exclamation-circle text-brand-600"></i>
+                <p class="text-xs font-bold text-brand-900">{{ error }}</p>
             </div>
             {% endif %}
 
-            <form action="/login" method="POST">
-                <div class="form-floating mb-3 text-start">
-                    <input type="text" name="username" class="form-control" id="user" placeholder="Usuario" required>
-                    <label for="user"><i class="fas fa-user me-2"></i>Usuario</label>
+            <form action="/login" method="POST" class="space-y-5">
+                <div class="space-y-2 group">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-brand-600">Identificador</label>
+                    <div class="relative">
+                        <input type="text" name="username" required 
+                               placeholder="Nombre de usuario"
+                               class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-12 py-4 text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all shadow-sm">
+                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-brand-500 transition-colors"></i>
+                    </div>
                 </div>
-                <div class="form-floating mb-4 text-start">
-                    <input type="password" name="password" class="form-control" id="pass" placeholder="Contraseña" required>
-                    <label for="pass"><i class="fas fa-lock me-2"></i>Contraseña</label>
+
+                <div class="space-y-2 group">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-brand-600">Contraseña</label>
+                    <div class="relative">
+                        <input type="password" name="password" required 
+                               placeholder="••••••••"
+                               class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-12 py-4 text-sm font-bold text-slate-700 outline-none focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all shadow-sm">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-brand-500 transition-colors"></i>
+                    </div>
                 </div>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-login btn-lg shadow-sm">Ingresar</button>
+
+                <div class="pt-4">
+                    <button type="submit" 
+                            class="w-full py-5 bg-gradient-to-br from-brand-600 to-rose-700 text-white rounded-2xl font-black uppercase tracking-[0.15em] text-sm shadow-xl shadow-brand-500/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3">
+                        <span>Ingresar al Sistema</span>
+                        <i class="fas fa-arrow-right text-xs"></i>
+                    </button>
                 </div>
             </form>
-            
-            <div class="mt-4 text-muted small">
-                <a href="/" class="text-decoration-none text-secondary"><i class="fas fa-arrow-left"></i> Volver al Inicio</a>
+
+            <div class="mt-10 pt-8 border-t border-slate-100 text-center">
+                <a href="/" class="text-[10px] font-black text-slate-400 hover:text-brand-600 uppercase tracking-widest transition-all inline-flex items-center gap-2">
+                    <i class="fas fa-home"></i>
+                    Volver a la vista pública
+                </a>
             </div>
         </div>
     </div>
+
+    <div class="fixed bottom-0 left-0 p-8 opacity-20 pointer-events-none">
+        <span class="text-white font-black text-6xl tracking-tighter uppercase select-none">SIH_QR</span>
+    </div>
+
 </body>
 </html>

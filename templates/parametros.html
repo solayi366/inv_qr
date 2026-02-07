@@ -3,77 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configuración General</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Configuración General - SIH_QR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3',
+                            500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 900: '#4c0519',
+                        }
+                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
     <style>
-        body { background-color: #f4f6f9; }
-        .bg-corporate { background-color: #b33515; color: white; }
-        .text-corporate { color: #b33515; }
-        .btn-corporate { background-color: #b33515; color: white; border: none; }
-        .btn-corporate:hover { background-color: #8a2be2; color: white; }
-        .card { border: none; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        body { background-color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .bg-corporate { background-color: #e11d48; color: white; }
+        /* Mantenemos tus clases originales para no romper el CSS de Bootstrap */
         .table-scroll { max-height: 350px; overflow-y: auto; scrollbar-width: thin; }
         .table-scroll-large { max-height: 500px; overflow-y: auto; scrollbar-width: thin; }
-        .table-sm td, .table-sm th { font-size: 0.85rem; vertical-align: middle; }
-        .nav-tabs { border-bottom: 2px solid #dee2e6; }
-        .nav-tabs .nav-link.active { color: #b33515; background: transparent; border-bottom: 3px solid #b33515; }
-        .nav-tabs .nav-link { color: #6c757d; font-weight: 500; }
-        .search-input { border-radius: 20px; padding-left: 35px; }
-        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #aaa; z-index: 10; }
-        .toast-container { z-index: 1055; }
+        .nav-tabs .nav-link.active { color: #e11d48 !important; border-bottom: 3px solid #e11d48 !important; background: transparent; }
+        .nav-tabs .nav-link { font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; color: #64748b; border: none; }
     </style>
 </head>
-<body>
+<body class="text-slate-800 antialiased">
+
     <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="liveToast" class="toast align-items-center text-white border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body fw-bold" id="toastMessage"></div>
+        <div id="liveToast" class="toast align-items-center text-white border-0 shadow-2xl rounded-2xl overflow-hidden" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex bg-slate-900">
+                <div class="toast-body fw-bold p-3" id="toastMessage"></div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
     </div>
 
-    <nav class="navbar navbar-dark bg-dark mb-4 shadow-sm py-2">
+    <nav class="navbar navbar-dark bg-slate-900 mb-8 shadow-lg py-3">
         <div class="container">
-            <a class="navbar-brand fs-6" href="/"><i class="fas fa-arrow-left me-2"></i> Volver al Inicio</a>
+            <a class="navbar-brand fs-6 font-black uppercase tracking-tighter" href="/">
+                <i class="fas fa-arrow-left me-2 text-brand-500"></i> Volver al Inicio
+            </a>
         </div>
     </nav>
 
     <div class="container pb-5">
-        <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-2">
-            <h3 class="fw-bold text-dark m-0"><i class="fas fa-cogs me-2 text-corporate"></i>Configuración del Sistema</h3>
-            <span class="text-muted small">Administración de Maestros</span>
+        <div class="d-flex align-items-center justify-content-between mb-8 border-b-2 border-slate-200 pb-4">
+            <h3 class="font-black text-slate-900 m-0 text-2xl tracking-tight">
+                <i class="fas fa-cogs me-2 text-brand-600"></i>Configuración del <span class="text-brand-600">Sistema</span>
+            </h3>
+            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Administración de Parametros</span>
         </div>
 
-        <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
-            <li class="nav-item"><button class="nav-link active" id="hardware-tab" data-bs-toggle="tab" data-bs-target="#hardware" type="button"><i class="fas fa-laptop me-2"></i>Hardware</button></li>
-            <li class="nav-item"><button class="nav-link" id="rrhh-tab" data-bs-toggle="tab" data-bs-target="#rrhh" type="button"><i class="fas fa-users me-2"></i>RRHH</button></li>
+        <ul class="nav nav-tabs mb-8 border-b-2 border-slate-100 gap-4" id="myTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active py-3 px-4 transition-all" id="hardware-tab" data-bs-toggle="tab" data-bs-target="#hardware" type="button">
+                    <i class="fas fa-laptop me-2"></i>Hardware
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link py-3 px-4 transition-all" id="rrhh-tab" data-bs-toggle="tab" data-bs-target="#rrhh" type="button">
+                    <i class="fas fa-users me-2"></i>RRHH
+                </button>
+            </li>
         </ul>
 
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="hardware" role="tabpanel">
-                <div class="row g-4 mb-4">
+                <div class="row g-4 mb-8">
                     <div class="col-md-6">
-                        <div class="card h-100">
-                            <div class="card-header bg-corporate"><span><i class="fas fa-tags me-2"></i>Tipos de Equipo</span></div>
-                            <div class="card-body p-3">
-                                <form action="/tipo/crear" method="POST" class="mb-3">
-                                    <div class="input-group input-group-sm">
-                                        <input type="text" name="nom_tipo" class="form-control" placeholder="Nuevo Tipo" required>
-                                        <button type="submit" class="btn btn-corporate"><i class="fas fa-plus"></i></button>
+                        <div class="card h-100 rounded-[2rem] border-2 border-slate-100 shadow-sm overflow-hidden">
+                            <div class="card-header bg-slate-900 text-white p-4 font-bold text-xs uppercase tracking-widest border-0">
+                                <span><i class="fas fa-tags me-2 text-brand-500"></i>Tipos de Equipo</span>
+                            </div>
+                            <div class="card-body p-6">
+                                <form action="/tipo/crear" method="POST" class="mb-4">
+                                    <div class="input-group">
+                                        <input type="text" name="nom_tipo" class="form-control rounded-l-xl border-2 border-slate-100 py-2.5 px-4 text-sm font-bold outline-none focus:border-brand-500" placeholder="Nuevo Tipo" required>
+                                        <button type="submit" class="btn bg-brand-600 text-white rounded-r-xl px-4 hover:bg-brand-700 transition-all shadow-lg shadow-brand-100"><i class="fas fa-plus"></i></button>
                                     </div>
                                 </form>
-                                <div class="table-scroll border rounded">
-                                    <table class="table table-sm table-hover mb-0">
-                                        <thead class="table-light"><tr><th>Nombre</th><th class="text-end">Acción</th></tr></thead>
-                                        <tbody>
+                                <div class="table-scroll rounded-2xl border-2 border-slate-50">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="bg-slate-50 text-[10px] font-black uppercase text-slate-400">
+                                            <tr><th class="px-4 py-3">Nombre</th><th class="px-4 py-3 text-end">Acción</th></tr>
+                                        </thead>
+                                        <tbody class="text-sm font-bold">
                                             {% for t in tipos %}
                                             <tr>
-                                                <td class="fw-bold text-secondary">{{ t.nom_tipo }}</td>
-                                                <td class="text-end">
-                                                    <a href="/editar_parametro/tipo/{{ t.id_tipoequi }}" class="text-primary me-2"><i class="fas fa-pencil-alt small"></i></a>
-                                                    <a href="/tipo/eliminar/{{ t.id_tipoequi }}" class="text-danger" onclick="return confirm('¿Borrar?')"><i class="fas fa-trash small"></i></a>
+                                                <td class="px-4 text-slate-700">{{ t.nom_tipo }}</td>
+                                                <td class="px-4 text-end">
+                                                    <a href="/editar_parametro/tipo/{{ t.id_tipoequi }}" class="text-slate-300 hover:text-brand-600 mx-2"><i class="fas fa-pencil-alt small"></i></a>
+                                                    <a href="/tipo/eliminar/{{ t.id_tipoequi }}" class="text-slate-300 hover:text-brand-600" onclick="return confirm('¿Borrar?')"><i class="fas fa-trash small"></i></a>
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -83,26 +110,31 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="col-md-6">
-                        <div class="card h-100">
-                            <div class="card-header bg-corporate"><span><i class="fas fa-copyright me-2"></i>Marcas</span></div>
-                            <div class="card-body p-3">
-                                <form action="/marca/crear" method="POST" class="mb-3">
-                                    <div class="input-group input-group-sm">
-                                        <input type="text" name="nom_marca" class="form-control" placeholder="Nueva Marca" required>
-                                        <button type="submit" class="btn btn-corporate"><i class="fas fa-plus"></i></button>
+                        <div class="card h-100 rounded-[2rem] border-2 border-slate-100 shadow-sm overflow-hidden">
+                            <div class="card-header bg-slate-900 text-white p-4 font-bold text-xs uppercase tracking-widest border-0">
+                                <span><i class="fas fa-copyright me-2 text-brand-500"></i>Marcas</span>
+                            </div>
+                            <div class="card-body p-6">
+                                <form action="/marca/crear" method="POST" class="mb-4">
+                                    <div class="input-group">
+                                        <input type="text" name="nom_marca" class="form-control rounded-l-xl border-2 border-slate-100 py-2.5 px-4 text-sm font-bold outline-none focus:border-brand-500" placeholder="Nueva Marca" required>
+                                        <button type="submit" class="btn bg-brand-600 text-white rounded-r-xl px-4 hover:bg-brand-700 shadow-lg shadow-brand-100"><i class="fas fa-plus"></i></button>
                                     </div>
                                 </form>
-                                <div class="table-scroll border rounded">
-                                    <table class="table table-sm table-hover mb-0">
-                                        <thead class="table-light"><tr><th>Nombre</th><th class="text-end">Acción</th></tr></thead>
-                                        <tbody>
+                                <div class="table-scroll rounded-2xl border-2 border-slate-50">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="bg-slate-50 text-[10px] font-black uppercase text-slate-400">
+                                            <tr><th class="px-4 py-3">Nombre</th><th class="px-4 py-3 text-end">Acción</th></tr>
+                                        </thead>
+                                        <tbody class="text-sm font-bold">
                                             {% for m in marcas %}
                                             <tr>
-                                                <td>{{ m.nom_marca }}</td>
-                                                <td class="text-end">
-                                                    <a href="/editar_parametro/marca/{{ m.id_marca }}" class="text-primary me-2"><i class="fas fa-pencil-alt small"></i></a>
-                                                    <a href="/marca/eliminar/{{ m.id_marca }}" class="text-danger" onclick="return confirm('¿Borrar?')"><i class="fas fa-trash small"></i></a>
+                                                <td class="px-4 text-slate-700">{{ m.nom_marca }}</td>
+                                                <td class="px-4 text-end">
+                                                    <a href="/editar_parametro/marca/{{ m.id_marca }}" class="text-slate-300 hover:text-brand-600 mx-2"><i class="fas fa-pencil-alt small"></i></a>
+                                                    <a href="/marca/eliminar/{{ m.id_marca }}" class="text-slate-300 hover:text-brand-600" onclick="return confirm('¿Borrar?')"><i class="fas fa-trash small"></i></a>
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -113,57 +145,58 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card shadow-sm border-0">
-                            <div class="card-header bg-dark text-white d-flex flex-wrap justify-content-between align-items-center gap-2">
-                                <span><i class="fas fa-layer-group me-2"></i>Catálogo de Modelos</span>
-                                <div class="position-relative" style="min-width: 250px;">
-                                    <i class="fas fa-search search-icon"></i>
-                                    <input type="text" id="buscadorModelo" class="form-control form-control-sm search-input" placeholder="Buscar modelo...">
-                                </div>
+
+                <div class="card rounded-[2.5rem] border-2 border-slate-100 shadow-xl overflow-hidden">
+                    <div class="card-header bg-slate-900 text-white p-6 border-0">
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                            <span class="font-black text-lg tracking-tight uppercase"><i class="fas fa-layer-group me-2 text-brand-500"></i>Catálogo de Modelos</span>
+                            <div class="relative w-full md:w-80">
+                                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                                <input type="text" id="buscadorModelo" class="w-full bg-white/10 border-0 rounded-2xl py-2.5 px-12 text-xs font-bold text-white outline-none focus:bg-white/20 transition-all" placeholder="Filtrar por nombre o marca...">
                             </div>
-                            <div class="card-body p-4">
-                                <form action="/modelo/crear" method="POST" class="mb-4 p-3 bg-light rounded border">
-                                    <div class="row g-2 align-items-end">
-                                        <div class="col-md-5"><input type="text" name="nom_modelo" class="form-control" placeholder="Nombre del Modelo" required></div>
-                                        <div class="col-md-3">
-                                            <select name="id_marca" class="form-select" required>
-                                                <option value="">Marca...</option>
-                                                {% for m in marcas %}<option value="{{ m.id_marca }}">{{ m.nom_marca }}</option>{% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <select name="id_tipoequi" class="form-select" required>
-                                                <option value="">Tipo...</option>
-                                                {% for t in tipos %}<option value="{{ t.id_tipoequi }}">{{ t.nom_tipo }}</option>{% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-md-1"><button type="submit" class="btn btn-dark w-100"><i class="fas fa-plus"></i></button></div>
-                                    </div>
-                                </form>
-                                <div class="table-scroll-large border rounded">
-                                    <table class="table table-hover align-middle mb-0" id="tablaModelos">
-                                        <thead class="table-light sticky-top">
-                                            <tr><th style="width: 40%;">Modelo</th><th style="width: 30%;">Marca</th><th style="width: 20%;">Tipo</th><th class="text-end">Acción</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for mod in modelos %}
-                                            <tr>
-                                                <td class="fw-bold">{{ mod.nom_modelo }}</td>
-                                                <td><span class="badge bg-light text-dark border">{{ mod.marca.nom_marca }}</span></td>
-                                                <td class="text-muted small">{{ mod.id_tipoequi }}</td>
-                                                <td class="text-end">
-                                                    <a href="/editar_parametro/modelo/{{ mod.id_modelo }}" class="btn btn-sm btn-outline-primary border-0"><i class="fas fa-pencil-alt"></i></a>
-                                                    <a href="/modelo/eliminar/{{ mod.id_modelo }}" class="btn btn-sm btn-outline-danger border-0" onclick="return confirm('¿Borrar este modelo?')"><i class="fas fa-trash"></i></a>
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
+                        </div>
+                    </div>
+                    <div class="card-body p-6">
+                        <form action="/modelo/crear" method="POST" class="mb-8 p-6 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-5"><input type="text" name="nom_modelo" class="form-control rounded-xl border-2 border-slate-200 py-2.5 px-4 text-xs font-bold" placeholder="Nombre del Modelo" required></div>
+                                <div class="col-md-3">
+                                    <select name="id_marca" class="form-select rounded-xl border-2 border-slate-200 py-2.5 px-4 text-xs font-bold" required>
+                                        <option value="">Marca...</option>
+                                        {% for m in marcas %}<option value="{{ m.id_marca }}">{{ m.nom_marca }}</option>{% endfor %}
+                                    </select>
                                 </div>
-                                <small class="text-muted mt-2 d-block text-end">Total: <span id="contadorModelos">{{ modelos|length }}</span></small>
+                                <div class="col-md-3">
+                                    <select name="id_tipoequi" class="form-select rounded-xl border-2 border-slate-200 py-2.5 px-4 text-xs font-bold" required>
+                                        <option value="">Tipo...</option>
+                                        {% for t in tipos %}<option value="{{ t.id_tipoequi }}">{{ t.nom_tipo }}</option>{% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-1"><button type="submit" class="btn bg-slate-900 text-white w-100 py-2.5 rounded-xl shadow-lg"><i class="fas fa-plus"></i></button></div>
                             </div>
+                        </form>
+                        <div class="table-scroll-large rounded-[2rem] border-2 border-slate-50">
+                            <table class="table table-hover align-middle mb-0" id="tablaModelos">
+                                <thead class="bg-slate-100 sticky-top text-[10px] font-black uppercase text-slate-500">
+                                    <tr><th class="px-6 py-4">Modelo</th><th class="px-6 py-4">Marca</th><th class="px-6 py-4">Tipo (ID)</th><th class="px-6 py-4 text-end">Acción</th></tr>
+                                </thead>
+                                <tbody class="text-sm font-bold">
+                                    {% for mod in modelos %}
+                                    <tr>
+                                        <td class="px-6 py-4 text-slate-900 uppercase tracking-tight">{{ mod.nom_modelo }}</td>
+                                        <td class="px-6 py-4"><span class="bg-white border-2 border-slate-100 px-3 py-1 rounded-lg text-[10px] text-slate-500 uppercase">{{ mod.marca.nom_marca }}</span></td>
+                                        <td class="px-6 py-4 text-xs text-slate-400 font-mono">{{ mod.id_tipoequi }}</td>
+                                        <td class="px-6 py-4 text-end">
+                                            <a href="/editar_parametro/modelo/{{ mod.id_modelo }}" class="text-slate-300 hover:text-brand-600 mx-2"><i class="fas fa-pencil-alt"></i></a>
+                                            <a href="/modelo/eliminar/{{ mod.id_modelo }}" class="text-slate-300 hover:text-brand-600" onclick="return confirm('¿Borrar?')"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4 text-end">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 px-4 py-2 rounded-full border border-slate-100">Total: <span id="contadorModelos" class="text-brand-600">{{ modelos|length }}</span> Registros</span>
                         </div>
                     </div>
                 </div>
@@ -172,25 +205,29 @@
             <div class="tab-pane fade" id="rrhh" role="tabpanel">
                 <div class="row g-4">
                     <div class="col-lg-5">
-                        <div class="card h-100">
-                            <div class="card-header bg-corporate"><i class="fas fa-building me-2"></i>Áreas</div>
-                            <div class="card-body p-3">
-                                <form action="/area/crear" method="POST" class="mb-3">
-                                    <div class="input-group input-group-sm">
-                                        <input type="text" name="nom_area" class="form-control" placeholder="Nueva Área" required>
-                                        <button type="submit" class="btn btn-corporate"><i class="fas fa-plus"></i></button>
+                        <div class="card h-100 rounded-[2rem] border-2 border-slate-100 shadow-sm overflow-hidden">
+                            <div class="card-header bg-slate-900 text-white p-4 font-bold text-xs uppercase tracking-widest border-0">
+                                <i class="fas fa-building me-2 text-brand-500"></i>Áreas
+                            </div>
+                            <div class="card-body p-6">
+                                <form action="/area/crear" method="POST" class="mb-4">
+                                    <div class="input-group">
+                                        <input type="text" name="nom_area" class="form-control rounded-l-xl border-2 border-slate-100 py-2.5 px-4 text-sm font-bold" placeholder="Nueva Área" required>
+                                        <button type="submit" class="btn bg-brand-600 text-white rounded-r-xl px-4"><i class="fas fa-plus"></i></button>
                                     </div>
                                 </form>
-                                <div class="table-scroll border rounded">
+                                <div class="table-scroll rounded-2xl border-2 border-slate-50">
                                     <table class="table table-sm table-hover mb-0">
-                                        <thead class="table-light"><tr><th>Nombre</th><th class="text-end">Acción</th></tr></thead>
-                                        <tbody>
+                                        <thead class="bg-slate-50 text-[10px] font-black uppercase text-slate-400">
+                                            <tr><th class="px-4 py-3">Nombre</th><th class="px-4 py-3 text-end">Acción</th></tr>
+                                        </thead>
+                                        <tbody class="text-sm font-bold">
                                             {% for a in areas %}
                                             <tr>
-                                                <td>{{ a.nom_area }}</td>
-                                                <td class="text-end">
-                                                    <a href="/editar_parametro/area/{{ a.id_area }}" class="text-primary me-2"><i class="fas fa-pencil-alt small"></i></a>
-                                                    <a href="/area/eliminar/{{ a.id_area }}" class="text-danger" onclick="return confirm('¿Borrar?')"><i class="fas fa-trash small"></i></a>
+                                                <td class="px-4 py-3 text-slate-700">{{ a.nom_area }}</td>
+                                                <td class="px-4 py-3 text-end">
+                                                    <a href="/editar_parametro/area/{{ a.id_area }}" class="text-slate-300 hover:text-brand-600 mx-2"><i class="fas fa-pencil-alt small"></i></a>
+                                                    <a href="/area/eliminar/{{ a.id_area }}" class="text-slate-300 hover:text-brand-600" onclick="return confirm('¿Borrar?')"><i class="fas fa-trash small"></i></a>
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -200,30 +237,40 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="col-lg-7">
-                        <div class="card h-100">
-                            <div class="card-header bg-dark text-white"><i class="fas fa-id-card me-2"></i>Empleados</div>
-                            <div class="card-body p-3">
-                                <form action="/empleado/crear" method="POST" class="mb-3 p-2 bg-light rounded border">
+                        <div class="card h-100 rounded-[2rem] border-2 border-slate-100 shadow-xl overflow-hidden">
+                            <div class="card-header bg-slate-900 text-white p-4 font-bold text-xs uppercase tracking-widest border-0">
+                                <i class="fas fa-id-card me-2 text-brand-500"></i>Registro de Empleados
+                            </div>
+                            <div class="card-body p-6">
+                                <form action="/empleado/crear" method="POST" class="mb-6 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <div class="row g-2">
-                                        <div class="col-3"><input type="text" name="cod_nom" class="form-control form-control-sm" placeholder="Cédula" required></div>
-                                        <div class="col-5"><input type="text" name="nom_emple" class="form-control form-control-sm" placeholder="Nombre" required></div>
-                                        <div class="col-3"><select name="id_area" class="form-select form-select-sm" required><option value="">Área...</option>{% for a in areas %}<option value="{{ a.id_area }}">{{ a.nom_area }}</option>{% endfor %}</select></div>
-                                        <div class="col-1"><button type="submit" class="btn btn-sm btn-dark w-100"><i class="fas fa-plus"></i></button></div>
+                                        <div class="col-3"><input type="text" name="cod_nom" class="form-control border-2 border-slate-200 py-2 px-3 text-xs font-bold rounded-xl" placeholder="Cédula" required></div>
+                                        <div class="col-5"><input type="text" name="nom_emple" class="form-control border-2 border-slate-200 py-2 px-3 text-xs font-bold rounded-xl" placeholder="Nombre completo" required></div>
+                                        <div class="col-3">
+                                            <select name="id_area" class="form-select border-2 border-slate-200 py-2 px-3 text-xs font-bold rounded-xl" required>
+                                                <option value="">Área...</option>
+                                                {% for a in areas %}<option value="{{ a.id_area }}">{{ a.nom_area }}</option>{% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-1"><button type="submit" class="btn btn-dark w-100 rounded-xl py-2"><i class="fas fa-plus"></i></button></div>
                                     </div>
                                 </form>
-                                <div class="table-scroll border rounded">
-                                    <table class="table table-sm table-hover align-middle mb-0">
-                                        <thead class="table-light"><tr><th>ID</th><th>Nombre</th><th>Área</th><th class="text-end">Acción</th></tr></thead>
-                                        <tbody>
+                                <div class="table-scroll rounded-2xl border-2 border-slate-50">
+                                    <table class="table table-sm table-hover mb-0">
+                                        <thead class="bg-slate-50 text-[10px] font-black uppercase text-slate-400">
+                                            <tr><th class="px-4 py-3">ID</th><th class="px-4 py-3">Nombre</th><th class="px-4 py-3">Área</th><th class="px-4 py-3 text-end">Acción</th></tr>
+                                        </thead>
+                                        <tbody class="text-sm font-bold">
                                             {% for e in empleados %}
                                             <tr>
-                                                <td><span class="badge bg-secondary">{{ e.cod_nom }}</span></td>
-                                                <td class="fw-bold text-dark">{{ e.nom_emple }}</td>
-                                                <td><small class="text-muted">{{ e.area.nom_area }}</small></td>
-                                                <td class="text-end">
-                                                    <a href="/editar_parametro/empleado/{{ e.cod_nom }}" class="text-primary me-2"><i class="fas fa-pencil-alt small"></i></a>
-                                                    <a href="/empleado/eliminar/{{ e.cod_nom }}" class="text-danger" onclick="return confirm('¿Eliminar?')"><i class="fas fa-trash small"></i></a>
+                                                <td class="px-4 py-3"><span class="bg-slate-900 text-brand-500 text-[9px] px-2 py-1 rounded-md font-mono">{{ e.cod_nom }}</span></td>
+                                                <td class="px-4 py-3 text-slate-700">{{ e.nom_emple }}</td>
+                                                <td class="px-4 py-3"><span class="text-[10px] text-slate-400">{{ e.area.nom_area }}</span></td>
+                                                <td class="px-4 py-3 text-end">
+                                                    <a href="/editar_parametro/empleado/{{ e.cod_nom }}" class="text-slate-300 hover:text-brand-600 mx-2"><i class="fas fa-pencil-alt small"></i></a>
+                                                    <a href="/empleado/eliminar/{{ e.cod_nom }}" class="text-slate-300 hover:text-brand-600" onclick="return confirm('¿Eliminar?')"><i class="fas fa-trash small"></i></a>
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -240,21 +287,19 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // SCRIPT UNIFICADO PARA TOASTS Y BÚSQUEDA
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. MANEJO DE NOTIFICACIONES (TOASTS)
+            // LÓGICA DE NOTIFICACIONES (Mantenida exactamente igual al original)
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('msg')) {
                 const msg = urlParams.get('msg');
                 const tipo = urlParams.get('tipo') || 'primary';
-                
                 const toastEl = document.getElementById('liveToast');
                 const toastBody = document.getElementById('toastMessage');
                 
-                if(tipo === 'success') toastEl.classList.add('bg-success');
-                else if(tipo === 'danger') toastEl.classList.add('bg-danger');
-                else if(tipo === 'warning') toastEl.classList.add('bg-warning', 'text-dark');
-                else toastEl.classList.add('bg-primary');
+                if(tipo === 'success') toastEl.classList.add('bg-emerald-500');
+                else if(tipo === 'danger') toastEl.classList.add('bg-rose-600');
+                else if(tipo === 'warning') toastEl.classList.add('bg-amber-500', 'text-slate-900');
+                else toastEl.classList.add('bg-slate-900');
 
                 toastBody.textContent = msg;
                 const toast = new bootstrap.Toast(toastEl);
@@ -262,7 +307,7 @@
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
 
-            // 2. BÚSQUEDA EN TIEMPO REAL
+            // LÓGICA DE BÚSQUEDA (Mantenida exactamente igual al original)
             const buscador = document.getElementById('buscadorModelo');
             const tabla = document.getElementById('tablaModelos');
             const contador = document.getElementById('contadorModelos');

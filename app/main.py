@@ -14,6 +14,7 @@ from fastapi.responses import RedirectResponse, StreamingResponse
 from starlette.middleware.sessions import SessionMiddleware 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError 
+from sqlalchemy import func # <--- NUEVO: Para contar y agrupar
 from passlib.context import CryptContext 
 
 from openpyxl import Workbook, load_workbook
@@ -21,7 +22,7 @@ from openpyxl import Workbook, load_workbook
 from . import models, schemas, database, utils
 
 # --- CONFIGURACIÓN ---
-BASE_URL = "http://localhost:8000/" 
+BASE_URL = "https://enviabuca.ddns.net/" 
 SECRET_KEY = "SUPXROSEVREUOIC4MBIPME" 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -65,8 +66,6 @@ def verify_password(plain, hashed): return pwd_context.verify(plain, hashed)
 
 # --- FUNCIÓN DE AUDITORÍA ---
 def registrar_historia(db: Session, id_activo: int, tipo: str, descripcion: str, usuario: str):
-    """Guarda un registro en la bitácora de auditoría."""
-    print(f"DEBUG: Guardando historial -> {id_activo} | {tipo} | {descripcion}")
     try:
         nuevo = models.Actualizacion(
             id_activo=id_activo,
@@ -77,7 +76,7 @@ def registrar_historia(db: Session, id_activo: int, tipo: str, descripcion: str,
         )
         db.add(nuevo)
     except Exception as e:
-        print(f"Error CRÍTICO guardando historial: {e}")
+        print(f"Error guardando historial: {e}")
 
 # --- API ENDPOINTS (AJAX/FETCH) ---
 @app.get("/api/empleado/{id}")
@@ -93,6 +92,37 @@ def api_buscar_empleado(id: str, db: Session = Depends(get_db)):
         "nombre": empleado.nom_emple,
         "id_area": empleado.id_area,
         "nom_area": empleado.area.nom_area if empleado.area else "SIN ÁREA"
+    }
+
+# --- NUEVO: API DE ESTADÍSTICAS ---
+@app.get("/api/stats")
+def api_estadisticas(request: Request, db: Session = Depends(get_db)):
+    if not request.session.get("usuario"): raise HTTPException(status_code=401)
+    
+    # 1. Totales Generales
+    total_activos = db.query(models.ActivoTec).count()
+    
+    # 2. Por Estado
+    por_estado = db.query(models.ActivoTec.estado, func.count(models.ActivoTec.id_activo))\
+                   .group_by(models.ActivoTec.estado).all()
+    
+    # 3. Por Marca (Top 5)
+    por_marca = db.query(models.Marca.nom_marca, func.count(models.ActivoTec.id_activo))\
+                  .join(models.Marca)\
+                  .group_by(models.Marca.nom_marca)\
+                  .order_by(func.count(models.ActivoTec.id_activo).desc())\
+                  .limit(5).all()
+
+    # 4. Por Tipo
+    por_tipo = db.query(models.TipoEquipo.nom_tipo, func.count(models.ActivoTec.id_activo))\
+                 .join(models.TipoEquipo)\
+                 .group_by(models.TipoEquipo.nom_tipo).all()
+
+    return {
+        "total": total_activos,
+        "estados": [{"label": e[0], "count": e[1]} for e in por_estado],
+        "marcas": [{"label": m[0], "count": m[1]} for m in por_marca],
+        "tipos": [{"label": t[0], "count": t[1]} for t in por_tipo]
     }
 
 # --- LOGIN Y SISTEMA ---
@@ -127,7 +157,12 @@ def pagina_principal(request: Request, db: Session = Depends(get_db)):
         "request": request, "activos": db.query(models.ActivoTec).all(), "user": request.session.get("usuario")
     })
 
-# --- RUTA FICHA TÉCNICA ---
+# --- NUEVO: RUTA DASHBOARD ---
+@app.get("/dashboard", response_class=templates.TemplateResponse)
+def dashboard_view(request: Request):
+    if not request.session.get("usuario"): return RedirectResponse("/login", status_code=303)
+    return templates.TemplateResponse("dashboard.html", {"request": request})
+
 @app.get("/ver/{id}")
 def ver_hoja_vida(request: Request, id: int, db: Session = Depends(get_db)):
     activo = db.query(models.ActivoTec).filter(models.ActivoTec.id_activo == id).first()
@@ -138,7 +173,6 @@ def ver_hoja_vida(request: Request, id: int, db: Session = Depends(get_db)):
         "user": request.session.get("usuario")
     })
 
-# --- RUTA HISTORIAL ---
 @app.get("/historial/{id}")
 def ver_historial_activo(request: Request, id: int, db: Session = Depends(get_db)):
     if not request.session.get("usuario"): return RedirectResponse("/login", status_code=303)
@@ -242,7 +276,6 @@ def exportar_individual(request: Request, id: int, db: Session = Depends(get_db)
     output = io.BytesIO(); wb.save(output); output.seek(0)
     return StreamingResponse(output, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers={"Content-Disposition": f"attachment; filename=HojaVida_{activo.serial}.xlsx"})
 
-# --- LÓGICA CORE: ESCÁNER INTELIGENTE ---
 def escanear_excel_flexible(ws):
     datos = { "tipo": "EQUIPO", "marca": "", "modelo": "", "referencia": "", "serial": "", "ip": "", "mac": "", "hostname": "", "responsable": "", "estado": "Bueno", "accesorios": [] }
     fila_8 = (str(ws['B8'].value or "") + str(ws['C8'].value or "") + str(ws['D8'].value or "")).upper()
@@ -307,7 +340,6 @@ async def prellenar_formulario(request: Request, file: UploadFile = File(...), d
         })
     except Exception as e: return RedirectResponse(f"/crear?msg=Error leyendo archivo: {str(e)}&tipo=danger", status_code=303)
 
-# --- CRUD CON GUARDADO EN BLOQUE ---
 @app.get("/crear", response_class=templates.TemplateResponse)
 def form_crear(request: Request, db: Session = Depends(get_db)):
     if not request.session.get("usuario"): return RedirectResponse("/login", status_code=303)
@@ -329,7 +361,6 @@ def procesar_crear(request: Request, serial: str = Form(...), id_tipoequi: int =
     if not usuario_actual: return RedirectResponse("/login", status_code=303)
     
     try:
-        # Responsable
         responsable_final = None
         if cod_responsable and cod_responsable.strip():
             emp = db.query(models.Empleado).filter(models.Empleado.cod_nom == cod_responsable.strip()).first()
@@ -352,7 +383,6 @@ def procesar_crear(request: Request, serial: str = Form(...), id_tipoequi: int =
         nuevo.codigo_qr = f"ACT-{nuevo.id_activo:04d}"
         utils.generar_codigo_qr(nuevo.codigo_qr, url_real)
         
-        # AUDITORÍA CREACIÓN
         registrar_historia(db, nuevo.id_activo, "CREACION", f"Activo creado. Resp: {responsable_final or 'Bodega'}", usuario_actual)
         db.commit()
 
@@ -400,10 +430,8 @@ def procesar_editar(request: Request, id: int, serial: str = Form(...), id_tipoe
     try:
         a = db.query(models.ActivoTec).get(id)
         
-        # === AUDITORÍA TOTAL DE CAMBIOS ===
         cambios = []
         
-        # 1. Normalización para evitar falsos positivos
         old_ser = (a.serial or "").strip()
         new_ser = (serial or "").strip()
         if old_ser != new_ser: cambios.append(f"Serial: {old_ser}->{new_ser}")
@@ -420,23 +448,19 @@ def procesar_editar(request: Request, id: int, serial: str = Form(...), id_tipoe
             new_marca = new_marca_obj.nom_marca if new_marca_obj else "N/A"
             cambios.append(f"Marca: {old_marca}->{new_marca}")
 
-        # Modelo (Manejo de Nulos)
         old_mod_id = a.id_modelo or 0
         new_mod_id = id_modelo or 0
         if old_mod_id != new_mod_id:
             cambios.append(f"Modelo modificado")
 
-        # Referencia
         old_ref = (a.referencia or "").strip()
         new_ref = (referencia or "").strip()
         if old_ref != new_ref: cambios.append(f"Ref: '{old_ref}' -> '{new_ref}'")
 
-        # Estado y Red
         if a.estado != estado: cambios.append(f"Estado: {a.estado}->{estado}")
         if (a.ip_equipo or "") != (ip_equipo or ""): cambios.append(f"IP: {a.ip_equipo}->{ip_equipo}")
         if (a.mac_activo or "") != (mac_activo or ""): cambios.append(f"MAC: {a.mac_activo}->{mac_activo}")
         
-        # Responsable
         nuevo_resp = None
         if cod_responsable and cod_responsable.strip():
             emp = db.query(models.Empleado).filter(models.Empleado.cod_nom == cod_responsable.strip()).first()
@@ -448,11 +472,9 @@ def procesar_editar(request: Request, id: int, serial: str = Form(...), id_tipoe
         if old_resp != new_resp_val:
             cambios.append(f"Responsable: {old_resp} -> {new_resp_val}")
 
-        # Guardar en Historial si hubo algo
         if cambios:
             registrar_historia(db, a.id_activo, "EDICION", "; ".join(cambios), usuario_actual)
 
-        # === APLICAR CAMBIOS EN DB ===
         a.serial = serial; a.referencia = referencia; a.ip_equipo = ip_equipo; a.mac_activo = mac_activo
         a.id_tipoequi = id_tipoequi; a.id_marca = id_marca; a.estado = estado; a.id_padre_activo = id_padre_activo
         a.id_modelo = id_modelo if id_modelo and id_modelo > 0 else None
@@ -463,6 +485,26 @@ def procesar_editar(request: Request, id: int, serial: str = Form(...), id_tipoe
     except Exception as e:
         print(f"Error al editar: {e}")
         return RedirectResponse(f"/ver/{id}?msg=Error al editar&tipo=danger", status_code=303)
+        
+# --- RUTA DE ELIMINACIÓN ---
+@app.get("/eliminar/{id}")
+def eliminar_activo(request: Request, id: int, db: Session = Depends(get_db)):
+    if not request.session.get("usuario"): return RedirectResponse("/login", status_code=303)
+    try:
+        activo = db.query(models.ActivoTec).get(id)
+        if not activo: return RedirectResponse("/?msg=Activo no encontrado&tipo=danger", status_code=303)
+        
+        db.query(models.Actualizacion).filter(models.Actualizacion.id_activo == id).delete()
+        hijos = db.query(models.ActivoTec).filter(models.ActivoTec.id_padre_activo == id).all()
+        for h in hijos:
+            db.query(models.Actualizacion).filter(models.Actualizacion.id_activo == h.id_activo).delete()
+            db.delete(h)
+        db.delete(activo)
+        db.commit()
+        return RedirectResponse("/?msg=Activo y accesorios eliminados correctamente&tipo=success", status_code=303)
+    except Exception as e:
+        db.rollback()
+        return RedirectResponse(f"/?msg=Error al eliminar: {str(e)}&tipo=danger", status_code=303)
 
 @app.get("/parametros", response_class=templates.TemplateResponse)
 def gestionar_parametros(request: Request, db: Session = Depends(get_db)):
