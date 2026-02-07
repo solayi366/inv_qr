@@ -1,77 +1,28 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoja de Vida - Activo {{ activo.id_activo }}</title>
-    <script src="/static/tailwind.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+{% block title %}Hoja de Vida - Activo {{ activo.id_activo }}{% endblock %}
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#fff1f2',
-                            100: '#ffe4e6',
-                            200: '#fecdd3',
-                            500: '#f43f5e',
-                            600: '#e11d48',
-                            700: '#be123c',
-                            800: '#9f1239',
-                        },
-                        accent: {
-                            deep: '#4c0519',
-                            soft: '#fb7185'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            background: radial-gradient(circle at top left, #fff1f2, #f8fafc);
-            min-height: 100vh;
-        }
+{% block head_scripts %}
+<style>
+    body {
+        background: radial-gradient(circle at top left, #fff1f2, #f8fafc);
+        min-height: 100vh;
+    }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(12px);
-            /* Borde de la clase CSS reforzado */
-            border: 2px solid rgba(225, 29, 72, 0.15);
-        }
+    .glass-card {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(12px);
+        /* Borde de la clase CSS reforzado */
+        border: 2px solid rgba(225, 29, 72, 0.15);
+    }
 
-        .red-gradient {
-            background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
-        }
-    </style>
-</head>
+    .red-gradient {
+        background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+    }
+</style>
+{% endblock %}
 
-<body class="text-slate-800 antialiased pb-12">
-
-    <nav class="sticky top-0 z-50 glass-card mb-8 px-6 py-4 shadow-sm border-b-2 border-primary-100">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <a href="/"
-                class="flex items-center text-primary-700 hover:text-primary-500 transition-all font-bold tracking-tight">
-                <i class="fas fa-arrow-left mr-2 text-sm"></i>
-                VOLVER AL LISTADO
-            </a>
-            <div class="hidden md:block">
-                <span
-                    class="px-3 py-1 bg-primary-50 text-primary-600 rounded-full text-xs font-bold border-2 border-primary-100">
-                    GESTIÓN DE INVENTARIO
-                </span>
-            </div>
-        </div>
-    </nav>
+{% block content %}
 
     <main class="max-w-6xl mx-auto px-4">
         <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
@@ -364,6 +315,5 @@
             }
         });
     </script>
-</body>
 
-</html>
+{% endblock %}

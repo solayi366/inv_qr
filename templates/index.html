@@ -1,223 +1,98 @@
-<!DOCTYPE html>
-<html lang="es">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Principal</title>
-    <script src="/static/tailwind.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+{% block title %}Inventario | INVRQR{% endblock %}
 
-    <!--CONFIGURACION TAILWIND-->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#fff1f2',
-                            100: '#ffe4e6',
-                            600: '#e11d48',
-                            700: '#be123c',
-                            900: '#4c0519',
-                        }
-                    },
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
-
-    <!--ESTILOS PERSONALIZADOS-->
-    <style>
-        body {
-            background-color: #fcfcfc;
-        }
-
-        .red-gradient {
-            background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
-        }
-
-        .custom-shadow {
-            shadow: 0 10px 15px -3px rgba(225, 29, 72, 0.05);
-        }
-    </style>
-
-</head>
-
-<!-------------NAVBAR--------------->
-
-<body class="text-slate-800 antialiased font-sans">
-    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-2 border-slate-200 px-4 py-2.5 md:px-8">
-        <div class="max-w-[1600px] mx-auto flex justify-between items-center">
-            <a href="/" class="flex items-center gap-2 group">
-                <div
-                    class="p-1 bg-white border-2 border-brand-100 rounded-lg group-hover:rotate-2 transition-transform">
-                    <img src="https://hub.envia.co/intranet/imagenes/logo-envia.png" alt="Logo Envia"
-                        class="h-7 w-auto">
-                </div>
-                <span class="font-black text-slate-900 tracking-tighter text-base uppercase">SIH<span
-                        class="text-brand-600"> QR</span></span>
-            </a>
-
-            <div class="flex items-center gap-2 md:gap-4">
-                {% if user %}
-                <div
-                    class="hidden sm:flex items-center gap-2 px-3 py-1 bg-slate-50 border-2 border-slate-100 rounded-xl">
-                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-tight">{{ user }}</span>
-                </div>
-
-                <div class="flex items-center gap-1.5 border-l-2 border-slate-100 pl-2 md:pl-4">
-                    <a href="/crear"
-                        class="p-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-all text-sm"
-                        title="Nuevo">
-                        <i class="fas fa-plus"></i>
-                    </a>
-                    <a href="/parametros"
-                        class="p-2 bg-brand-900 text-white rounded-lg hover:bg-brand-900 transition-all text-sm"
-                        title="Configuracion">
-                        <i class="fas fa-cogs"></i>
-                    </a>
-                    <a href="/exportar"
-                        class="p-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all text-sm">
-                        <i class="fas fa-file-excel"></i>
-                    </a>
-                    <a href="/dashboard"
-                        class="p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all text-sm"
-                        title="Dashboard">
-                        <i class="fas fa-chart-pie"></i>
-                    </a>
-                    <a href="/logout" class="p-2 text-slate-400 hover:text-brand-600 transition-colors text-sm">
-                        <i class="fas fa-power-off"></i>
-                    </a>
-                </div>
-                {% else %}
-                <a href="/login"
-                    class="text-xs font-bold text-brand-600 uppercase border-2 border-brand-100 px-4 py-2 rounded-xl hover:bg-brand-50 transition-all">Acceso
-                    Admin</a>
-                {% endif %}
-            </div>
+{% block content %}
+<div class="max-w-[1600px] mx-auto">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Inventario de Activos</h1>
+            <p class="text-slate-500 font-medium mt-1">Gestión centralizada de equipos tecnológicos.</p>
         </div>
-    </nav>
-    <!----------------------------------->
-
-
-    <!--LISTADO DE ACTIVOS TECNOLOGGICOS-->
-
-    <main class="max-w-[1600px] mx-auto p-4 md:p-6">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div class="flex items-center gap-4">
-                <div class="h-10 w-1 red-gradient rounded-full"></div>
-                <div>
-                    <h1 class="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight leading-none">
-                        Activos <span class="text-brand-600">Tecnológicos</span>
-                    </h1>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Total: {{
-                        activos|length }} registros encontrados</p>
-                </div>
-            </div>
-
-            <div class="flex gap-2">
-                <div class="relative group">
-                    <i
-                        class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-xs group-focus-within:text-brand-600 transition-colors"></i>
-                    <input type="text" placeholder="Buscar activo..."
-                        class="pl-9 pr-4 py-2 bg-white border-2 border-slate-200 rounded-xl text-sm focus:border-brand-600 focus:outline-none transition-all w-full md:w-64">
-                </div>
-            </div>
+        <div class="relative w-full md:w-96 group">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-600 transition-colors"></i>
+            <input type="text" placeholder="Buscar..." id="searchInput" onkeyup="filtrarTabla()"
+                class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium shadow-sm focus:border-brand-600 focus:ring-4 focus:ring-brand-50 outline-none transition-all">
         </div>
+    </div>
 
-        <!--TABLA DE ACTIVOS-->
-        <div
-            class="bg-white rounded-[1.5rem] md:rounded-[2rem] border-2 border-slate-200 shadow-xl shadow-slate-200/40 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-slate-900 text-white border-b-2 border-slate-800">
-                        <tr>
-                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Tipo</th>
-                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Marca / Modelo</th>
-                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Serial</th>
-                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Asignación</th>
-                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Estado
-                            </th>
-                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">Acción
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y-2 divide-slate-50">
-                        {% for activo in activos %}
-                        {% if not activo.id_padre_activo %}
-                        <tr class="hover:bg-brand-50/30 transition-colors group">
-                            <td class="px-6 py-4">
-                                <span
-                                    class="px-2.5 py-1 bg-brand-50 text-brand-700 border-2 border-brand-100 rounded-lg text-[9px] font-black uppercase tracking-tighter">
-                                    {{ activo.tipo.nom_tipo }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="font-bold text-slate-800 text-sm leading-tight">{{ activo.marca.nom_marca }}
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="tablaActivos">
+                <thead>
+                    <tr class="bg-slate-50/50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <th class="px-6 py-4">Equipo</th>
+                        <th class="px-6 py-4">Marca/Ref</th>
+                        <th class="px-6 py-4">Serial / ID</th>
+                        <th class="px-6 py-4">Ubicación</th>
+                        <th class="px-6 py-4 text-center">Estado</th>
+                        <th class="px-6 py-4 text-right">Acción</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm">
+                    {% for activo in activos %}
+                    {% if not activo.id_padre_activo %}
+                    <tr class="hover:bg-brand-50/20 transition-colors group">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-slate-900">{{ activo.tipo.nom_tipo }}</div>
+                            <div class="text-xs text-slate-400">{{ activo.hostname or 'Sin Hostname' }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                                {{ activo.marca.nom_marca }}
+                            </span>
+                            <div class="text-xs text-slate-400 mt-1">{{ activo.modelo.nom_modelo if activo.modelo else activo.referencia }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="font-mono font-semibold text-slate-700 text-xs">{{ activo.serial }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if activo.responsable %}
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 text-xs font-bold">
+                                    {{ activo.responsable.nom_emple[:2] }}
                                 </div>
-                                <div class="text-[10px] text-slate-400 font-bold mt-0.5 truncate max-w-[150px]">
-                                    {{ activo.modelo.nom_modelo if activo.modelo else activo.referencia }}
+                                <div class="min-w-0">
+                                    <p class="font-bold text-slate-800 text-xs truncate max-w-[120px]">{{ activo.responsable.nom_emple }}</p>
+                                    <p class="text-[10px] text-slate-500 uppercase font-bold">{{ activo.responsable.area.nom_area }}</p>
                                 </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span
-                                    class="font-mono text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded border-2 border-slate-200">
-                                    {{ activo.serial }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4">
-                                {% if activo.responsable %}
-                                <div class="flex items-center gap-2">
-                                    <div
-                                        class="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center text-[10px] border border-brand-100">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="text-xs font-bold text-slate-700 truncate max-w-[120px]">{{
-                                            activo.responsable.nom_emple }}</p>
-                                        <p class="text-[9px] text-slate-400 font-bold uppercase">{{
-                                            activo.responsable.area.nom_area }}</p>
-                                    </div>
-                                </div>
-                                {% else %}
-                                <div class="text-[10px] font-bold text-slate-300 flex items-center gap-1.5 italic">
-                                    <i class="fas fa-warehouse text-[9px]"></i> BODEGA
-                                </div>
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                {% if activo.estado == 'Bueno' %}
-                                <span
-                                    class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-700 border-2 border-emerald-100 rounded-full text-[9px] font-black uppercase">
-                                    Operativo
-                                </span>
-                                {% else %}
-                                <span
-                                    class="inline-flex items-center px-3 py-1 bg-brand-50 text-brand-700 border-2 border-brand-100 rounded-full text-[9px] font-black uppercase">
-                                    {{ activo.estado }}
-                                </span>
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <a href="/ver/{{ activo.id_activo }}"
-                                    class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border-2 border-slate-100 text-slate-300 group-hover:border-brand-600 group-hover:text-brand-600 transition-all shadow-sm">
-                                    <i class="fas fa-arrow-right text-[10px]"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endif %}
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                            </div>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">
+                                <i class="fas fa-warehouse"></i> Bodega
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            {% if activo.estado == 'Bueno' %}
+                                <span class="inline-flex px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">OK</span>
+                            {% elif activo.estado == 'Baja' %}
+                                <span class="inline-flex px-2 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 line-through">BAJA</span>
+                            {% else %}
+                                <span class="inline-flex px-2 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600">{{ activo.estado }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex justify-end gap-1">
+                                <a href="/ver/{{ activo.id_activo }}" class="p-1.5 text-slate-400 hover:text-brand-600 transition-colors"><i class="fas fa-eye"></i></a>
+                                <a href="/editar/{{ activo.id_activo }}" class="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"><i class="fas fa-edit"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </main>
-
-</body>
-
-</html>
+    </div>
+</div>
+<script>
+    function filtrarTabla() {
+        const filter = document.getElementById("searchInput").value.toUpperCase();
+        const rows = document.getElementById("tablaActivos").getElementsByTagName("tr");
+        for (let i = 1; i < rows.length; i++) {
+            rows[i].style.display = rows[i].innerText.toUpperCase().includes(filter) ? "" : "none";
+        }
+    }
+</script>
+{% endblock %}

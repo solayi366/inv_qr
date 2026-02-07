@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SIH_QR{% endblock %}</title>
+    <script src="/static/tailwind.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    {% block head_scripts %}{% endblock %}
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#fff1f2', 100: '#ffe4e6', 600: '#e11d48', 700: '#be123c', 900: '#4c0519' }
+                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; }
+        
+        /* Transiciones suaves para el sidebar */
+        #sidebar { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-text { transition: opacity 0.2s; white-space: nowrap; }
+        
+        /* Estado Colapsado (Solo PC) */
+        @media (min-width: 768px) {
+            #sidebar.collapsed { width: 5rem; }
+            #sidebar.collapsed .sidebar-text { display: none; opacity: 0; }
+            #sidebar.collapsed .nav-icon { margin-right: 0; font-size: 1.25rem; }
+            #sidebar.collapsed .logo-text { display: none; }
+            #sidebar.collapsed .section-title { display: none; }
+            #sidebar.collapsed .user-info { display: none; }
+        }
+
+        /* Ocultar scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased font-sans h-screen flex overflow-hidden">
+
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden transition-opacity"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 flex flex-col h-full shadow-xl transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300">
+        
+        <button onclick="toggleSidebarPC()" class="hidden md:flex absolute -right-3 top-20 bg-white border border-slate-200 text-slate-400 hover:text-brand-600 rounded-full w-6 h-6 items-center justify-center shadow-sm z-50 hover:scale-110 transition-transform">
+            <i id="toggleIcon" class="fas fa-chevron-left text-xs"></i>
+        </button>
+
+        <div class="h-16 md:h-20 flex items-center justify-center border-b border-slate-100 shrink-0">
+            <a href="/" class="flex items-center gap-3 px-4">
+                <div class="p-1.5 bg-brand-50 rounded-lg shrink-0">
+                    <img src="/static/logo.png" alt="Logo" class="h-8 w-8 object-contain">
+                </div>
+                <span class="logo-text font-black text-xl tracking-tighter uppercase text-slate-900">
+                    SIH<span class="text-brand-600">QR</span>
+                </span>
+            </a>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto no-scrollbar py-4 space-y-1 px-3">
+            <p class="section-title px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 mt-2">Principal</p>
+            
+            <a href="/" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-brand-700 transition-all {% if request.url.path == '/' %}bg-brand-50 text-brand-700{% endif %}">
+                <i class="fas fa-layer-group nav-icon w-6 text-center"></i>
+                <span class="sidebar-text ml-3">Inventario</span>
+            </a>
+
+            <a href="/dashboard" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-brand-700 transition-all {% if request.url.path == '/dashboard' %}bg-brand-50 text-brand-700{% endif %}">
+                <i class="fas fa-chart-pie nav-icon w-6 text-center"></i>
+                <span class="sidebar-text ml-3">Métricas</span>
+            </a>
+
+            <p class="section-title px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 mt-6">Gestión</p>
+
+            <a href="/crear" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-brand-700 transition-all {% if request.url.path == '/crear' %}bg-brand-50 text-brand-700{% endif %}">
+                <i class="fas fa-plus-circle nav-icon w-6 text-center"></i>
+                <span class="sidebar-text ml-3">Nuevo Activo</span>
+            </a>
+
+            <a href="/parametros" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-brand-700 transition-all {% if request.url.path == '/parametros' %}bg-brand-50 text-brand-700{% endif %}">
+                <i class="fas fa-sliders-h nav-icon w-6 text-center"></i>
+                <span class="sidebar-text ml-3">Parámetros</span>
+            </a>
+
+            <p class="section-title px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 mt-6">Reportes</p>
+
+            <a href="/exportar" class="flex items-center px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all">
+                <i class="fas fa-file-excel nav-icon w-6 text-center text-emerald-500"></i>
+                <span class="sidebar-text ml-3">Exportar Todo</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-100 bg-slate-50/50 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-md shrink-0">
+                    {{ request.session.get('usuario', 'A')[0]|upper }}
+                </div>
+                <div class="sidebar-text user-info flex-1 min-w-0">
+                    <p class="text-xs font-bold text-slate-900 truncate">{{ request.session.get('usuario', 'Admin') }}</p>
+                    <a href="/logout" class="text-[10px] text-red-500 hover:text-red-700 font-bold flex items-center gap-1 mt-0.5">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-slate-50/50 w-full">
+        
+        <header class="md:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 z-30 shrink-0 sticky top-0">
+            <button onclick="toggleMobileMenu()" class="text-slate-500 hover:text-brand-600 p-2">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <span class="font-black text-lg uppercase text-slate-900">SIH<span class="text-brand-600">QR</span></span>
+            <div class="w-8"></div> </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth w-full">
+            
+            {% if request.query_params.get("msg") %}
+            <div class="max-w-6xl mx-auto mb-6 p-4 rounded-xl border flex items-center gap-3 font-bold text-sm shadow-sm
+                {% if request.query_params.get('tipo') == 'success' %} bg-emerald-50 border-emerald-200 text-emerald-700 
+                {% elif request.query_params.get('tipo') == 'danger' %} bg-red-50 border-red-200 text-red-700 
+                {% else %} bg-blue-50 border-blue-200 text-blue-700 {% endif %}">
+                <i class="fas fa-info-circle text-lg"></i>
+                {{ request.query_params.get("msg") }}
+            </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobile-overlay');
+        const icon = document.getElementById('toggleIcon');
+        const STORAGE_KEY = 'sidebarState';
+
+        // Lógica PC (Minimizar/Maximizar)
+        function toggleSidebarPC() {
+            if (window.innerWidth >= 768) {
+                const isCollapsed = sidebar.classList.toggle('collapsed');
+                localStorage.setItem(STORAGE_KEY, isCollapsed ? 'collapsed' : 'expanded');
+                icon.className = isCollapsed ? 'fas fa-chevron-right text-xs' : 'fas fa-chevron-left text-xs';
+            }
+        }
+
+        // Lógica Móvil (Abrir/Cerrar Menu)
+        function toggleMobileMenu() {
+            const isClosed = sidebar.classList.contains('-translate-x-full');
+            if (isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Recuperar estado al cargar (Solo PC)
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth >= 768) {
+                const state = localStorage.getItem(STORAGE_KEY);
+                if (state === 'collapsed') {
+                    sidebar.classList.add('collapsed');
+                    if(icon) icon.className = 'fas fa-chevron-right text-xs';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

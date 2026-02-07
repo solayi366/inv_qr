@@ -1,101 +1,83 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuevo Activo - Ruby QR Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% extends "base.html" %}
+
+{% block title %}Nuevo Activo - Ruby QR Pro{% endblock %}
+
+{% block head_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    body { 
+        background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
+        min-height: 100vh;
+    }
+    .red-gradient { background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%); }
     
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3',
-                            500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 900: '#4c0519',
-                        }
-                    },
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { 
-            background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
-            min-height: 100vh;
-        }
-        .red-gradient { background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%); }
-        
-        /* CONTENEDOR DE INPUT CON GRADIENTE SUTIL */
-        .input-group-ruby {
-            display: flex;
-            align-items: stretch;
-            border: 2px solid #cbd5e1;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            transition: all 0.3s;
-            background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .input-group-ruby:focus-within {
-            border-color: #e11d48;
-            box-shadow: 0 0 0 4px rgba(255,241,242,1), 0 4px 12px rgba(225,29,72,0.1);
-            background: linear-gradient(to bottom, #ffffff 0%, #fff1f2 100%);
-        }
-        
-        /* ESPACIO PARA EL ICONO CON GRADIENTE */
-        .input-icon-box {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 3rem;
-            border-right: 2px solid #e2e8f0;
-            color: #94a3b8;
-            transition: all 0.3s;
-            background: linear-gradient(to right, #f1f5f9, #f8fafc);
-            cursor: pointer;
-        }
-        .input-group-ruby:focus-within .input-icon-box,
-        .input-icon-box:hover {
-            background: linear-gradient(to right, #ffe4e6, #fff1f2);
-            color: #e11d48;
-            border-right-color: #fecdd3;
-        }
-        
-        /* ÁREA DE ESCRITURA */
-        .input-ruby {
-            flex: 1;
-            padding: 0.625rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 700;
-            outline: none;
-            background: transparent;
-        }
-        .input-ruby::placeholder {
-            color: #cbd5e1;
-        }
-        
-        .label-ruby {
-            font-size: 0.6875rem;
-            font-weight: 800;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-        
-        .modal { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); }
-        
-        .bg-white { box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-    </style>
-</head>
-<body class="text-slate-800 antialiased font-sans pb-20">
+    /* CONTENEDOR DE INPUT CON GRADIENTE SUTIL */
+    .input-group-ruby {
+        display: flex;
+        align-items: stretch;
+        border: 2px solid #cbd5e1;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        transition: all 0.3s;
+        background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .input-group-ruby:focus-within {
+        border-color: #e11d48;
+        box-shadow: 0 0 0 4px rgba(255,241,242,1), 0 4px 12px rgba(225,29,72,0.1);
+        background: linear-gradient(to bottom, #ffffff 0%, #fff1f2 100%);
+    }
+    
+    /* ESPACIO PARA EL ICONO CON GRADIENTE */
+    .input-icon-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 3rem;
+        border-right: 2px solid #e2e8f0;
+        color: #94a3b8;
+        transition: all 0.3s;
+        background: linear-gradient(to right, #f1f5f9, #f8fafc);
+        cursor: pointer;
+    }
+    .input-group-ruby:focus-within .input-icon-box,
+    .input-icon-box:hover {
+        background: linear-gradient(to right, #ffe4e6, #fff1f2);
+        color: #e11d48;
+        border-right-color: #fecdd3;
+    }
+    
+    /* ÁREA DE ESCRITURA */
+    .input-ruby {
+        flex: 1;
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 700;
+        outline: none;
+        background: transparent;
+    }
+    .input-ruby::placeholder {
+        color: #cbd5e1;
+    }
+    
+    .label-ruby {
+        font-size: 0.6875rem;
+        font-weight: 800;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .modal { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); }
+    
+    .bg-white { box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+</style>
+{% endblock %}
+
+{% block content %}
 
     {% if msg %}
     <div class="toast-container position-fixed top-0 end-0 p-4" style="z-index: 1060;">
@@ -109,19 +91,7 @@
     </div>
     {% endif %}
 
-    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-2 border-slate-200 px-4 py-3 md:px-8 shadow-sm">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <a href="/" class="flex items-center gap-2 group">
-                <div class="p-1.5 bg-white border-2 border-brand-100 rounded-xl group-hover:rotate-2 transition-transform shadow-sm">
-                    <img src="/static/logo.png" alt="Logo" class="h-6 w-auto">
-                </div>
-                <span class="font-black text-slate-900 tracking-tighter text-base uppercase">Nuevo<span class="text-brand-600">Activo</span></span>
-            </a>
-            <a href="/" class="text-xs font-bold text-slate-500 hover:text-brand-600 flex items-center gap-2 transition-all">
-                <i class="fas fa-arrow-left text-[10px]"></i> Volver al Inicio
-            </a>
-        </div>
-    </nav>
+
 
     <main class="max-w-6xl mx-auto p-4 md:p-10">
         
@@ -484,5 +454,5 @@
 
         document.addEventListener('DOMContentLoaded', toggleCampos);
     </script>
-</body>
-</html>
+
+{% endblock %}

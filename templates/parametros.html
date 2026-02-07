@@ -1,40 +1,22 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configuración General - SIH_QR</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% extends "base.html" %}
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3',
-                            500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 900: '#4c0519',
-                        }
-                    },
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { background-color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .bg-corporate { background-color: #e11d48; color: white; }
-        /* Mantenemos tus clases originales para no romper el CSS de Bootstrap */
-        .table-scroll { max-height: 350px; overflow-y: auto; scrollbar-width: thin; }
-        .table-scroll-large { max-height: 500px; overflow-y: auto; scrollbar-width: thin; }
-        .nav-tabs .nav-link.active { color: #e11d48 !important; border-bottom: 3px solid #e11d48 !important; background: transparent; }
-        .nav-tabs .nav-link { font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; color: #64748b; border: none; }
-    </style>
-</head>
-<body class="text-slate-800 antialiased">
+{% block title %}Configuración General - SIH_QR{% endblock %}
+
+{% block head_scripts %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body { background-color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bg-corporate { background-color: #e11d48; color: white; }
+    /* Mantenemos tus clases originales para no romper el CSS de Bootstrap */
+    .table-scroll { max-height: 350px; overflow-y: auto; scrollbar-width: thin; }
+    .table-scroll-large { max-height: 500px; overflow-y: auto; scrollbar-width: thin; }
+    .nav-tabs .nav-link.active { color: #e11d48 !important; border-bottom: 3px solid #e11d48 !important; background: transparent; }
+    .nav-tabs .nav-link { font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; color: #64748b; border: none; }
+</style>
+{% endblock %}
+
+{% block content %}
 
     <div class="toast-container position-fixed top-0 end-0 p-3">
         <div id="liveToast" class="toast align-items-center text-white border-0 shadow-2xl rounded-2xl overflow-hidden" role="alert" aria-live="assertive" aria-atomic="true">
@@ -44,14 +26,6 @@
             </div>
         </div>
     </div>
-
-    <nav class="navbar navbar-dark bg-slate-900 mb-8 shadow-lg py-3">
-        <div class="container">
-            <a class="navbar-brand fs-6 font-black uppercase tracking-tighter" href="/">
-                <i class="fas fa-arrow-left me-2 text-brand-500"></i> Volver al Inicio
-            </a>
-        </div>
-    </nav>
 
     <div class="container pb-5">
         <div class="d-flex align-items-center justify-content-between mb-8 border-b-2 border-slate-200 pb-4">
@@ -331,5 +305,5 @@
             }
         });
     </script>
-</body>
-</html>
+
+{% endblock %}
