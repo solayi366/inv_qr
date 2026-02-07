@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoja de Vida - Activo {{ activo.id_activo }}</title>
+    <script src="/static/tailwind.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                        },
+                        accent: {
+                            deep: '#4c0519',
+                            soft: '#fb7185'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: radial-gradient(circle at top left, #fff1f2, #f8fafc);
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            /* Borde de la clase CSS reforzado */
+            border: 2px solid rgba(225, 29, 72, 0.15);
+        }
+
+        .red-gradient {
+            background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 antialiased pb-12">
+
+    <nav class="sticky top-0 z-50 glass-card mb-8 px-6 py-4 shadow-sm border-b-2 border-primary-100">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="/"
+                class="flex items-center text-primary-700 hover:text-primary-500 transition-all font-bold tracking-tight">
+                <i class="fas fa-arrow-left mr-2 text-sm"></i>
+                VOLVER AL LISTADO
+            </a>
+            <div class="hidden md:block">
+                <span
+                    class="px-3 py-1 bg-primary-50 text-primary-600 rounded-full text-xs font-bold border-2 border-primary-100">
+                    GESTIÓN DE INVENTARIO
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+            <div class="flex items-start gap-5">
+                <div class="p-4 bg-white rounded-3xl shadow-md border-2 border-slate-100  transition-transform">
+                    <img src="https://hub.envia.co/intranet/imagenes/logo-envia.png" alt="Logo"
+                        class="h-12 w-auto object-contain">
+                </div>
+                <div>
+                    <span class="text-primary-600 font-extrabold text-sm uppercase tracking-[0.2em]">Ficha
+                        Técnica</span>
+                    <h1 class="text-3xl md:text-4xl font-black text-slate-900 leading-none mt-1">
+                        Activo <span class="text-transparent bg-clip-text red-gradient">#{{ activo.id_activo }}</span>
+                    </h1>
+                </div>
+            </div>
+
+            {% if user %}
+            <div class="flex gap-3 w-full md:w-auto">
+                <a href="/editar/{{ activo.id_activo }}"
+                    class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-200 rounded-2xl transition-all shadow-sm font-bold text-sm">
+                    <i class="fas fa-pen-nib text-primary-500"></i>
+
+                </a>
+
+                <a href="/historial/{{ activo.id_activo }}"
+                    class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-200 rounded-2xl transition-all shadow-sm font-bold text-sm">
+                    <i class="fas fa-history text-blue-500"></i>
+
+                </a>
+                <a href="/imprimir/{{ activo.id_activo }}" target="_blank"
+                    class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-2xl transition-all shadow-lg font-bold text-sm">
+                    <i class="fas fa-print"></i>
+
+                </a>
+                {% if not activo.padre %}
+                <a href="/exportar_individual/{{ activo.id_activo }}"
+                    class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 red-gradient hover:opacity-90 text-white rounded-2xl transition-all shadow-lg shadow-primary-200 font-bold text-sm">
+                    <i class="fas fa-download"></i>
+
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <div class="lg:col-span-4 space-y-6">
+                <div
+                    class="glass-card rounded-[2.5rem] p-10 shadow-2xl shadow-primary-900/5 text-center relative overflow-hidden group border-2 border-primary-100">
+                    <div
+                        class="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 opacity-50">
+                    </div>
+
+                    <div class="relative z-10">
+                        <div class="inline-block p-6 bg-white rounded-[2rem] shadow-xl border-2 border-primary-50 mb-6">
+                            <img src="/static/qrcodes/{{ activo.codigo_qr }}.png" class="w-44 h-44" alt="QR Code">
+                        </div>
+                        <p class="text-xs font-black text-primary-300 uppercase tracking-widest mb-1">Código Único</p>
+                        <h2 class="text-4xl font-black text-slate-800 mb-6 tracking-tighter">{{ activo.codigo_qr }}</h2>
+
+                        <div class="inline-flex items-center">
+                            {% if activo.estado == 'Bueno' %}
+                            <span
+                                class="px-8 py-2.5 bg-emerald-500 text-white rounded-full text-xs font-black shadow-lg shadow-emerald-200 uppercase tracking-wider border-2 border-emerald-400">
+                                <i class="fas fa-check-circle mr-2"></i> Operativo
+                            </span>
+                            {% elif activo.estado == 'Malo' %}
+                            <span
+                                class="px-8 py-2.5 bg-primary-600 text-white rounded-full text-xs font-black shadow-lg shadow-primary-200 uppercase tracking-wider border-2 border-primary-500">
+                                <i class="fas fa-times-circle mr-2"></i> Dañado
+                            </span>
+                            {% else %}
+                            <span
+                                class="px-8 py-2.5 bg-amber-500 text-white rounded-full text-xs font-black shadow-lg shadow-amber-200 uppercase tracking-wider border-2 border-amber-400">
+                                <i class="fas fa-tools mr-2"></i> {{ activo.estado }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="red-gradient rounded-[2.5rem] p-8 text-white shadow-xl shadow-primary-900/20 relative overflow-hidden border-2 border-primary-700">
+                    <div class="absolute bottom-0 right-0 opacity-10">
+                        <i class="fas fa-user-shield text-9xl -mb-8 -mr-8"></i>
+                    </div>
+                    <h3 class="text-primary-100/60 text-xs font-black uppercase tracking-widest mb-6">Custodio del
+                        Activo</h3>
+                    {% if activo.responsable %}
+                    <div class="flex items-center gap-5">
+                        <div
+                            class="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-3xl border-2 border-white/20">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="font-black text-xl leading-tight truncate">{{ activo.responsable.nom_emple }}</p>
+                            <p class="text-primary-100/80 text-sm font-medium mt-1 truncate">{{
+                                activo.responsable.area.nom_area }}</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="flex items-center gap-4 py-2">
+                        <i class="fas fa-warehouse text-3xl text-primary-200/50"></i>
+                        <span class="font-bold text-lg text-primary-50">Disponible en Bodega</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-6">
+                <div class="glass-card rounded-[2.5rem] p-10 shadow-sm border-2 border-primary-50">
+                    <div class="flex items-center gap-3 mb-10">
+                        <div class="w-10 h-1 bg-primary-600 rounded-full"></div>
+                        <h3 class="text-xl font-black text-slate-900">Especificaciones Técnicas</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-x-12 gap-y-8">
+                        <div class="space-y-1">
+                            <span
+                                class="text-[10px] font-black text-primary-600 uppercase tracking-[0.15em]">Categoría</span>
+                            <p class="text-slate-800 font-bold text-lg leading-tight">{{ activo.tipo.nom_tipo }}</p>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-black text-primary-600 uppercase tracking-[0.15em]">Marca /
+                                Modelo</span>
+                            <p class="text-slate-800 font-bold text-lg leading-tight">{{ activo.marca.nom_marca }} <span
+                                    class="text-slate-300 font-normal mx-1">|</span> {{ activo.referencia }}</p>
+                        </div>
+                        <div
+                            class="md:col-span-2 bg-slate-50 p-6 rounded-3xl border-2 border-slate-100 flex justify-between items-center group">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Serial
+                                    del Fabricante</span>
+                                <p class="font-mono text-primary-700 font-black text-2xl tracking-tighter">{{
+                                    activo.serial }}</p>
+                            </div>
+                            <i
+                                class="fas fa-barcode text-4xl text-slate-200 group-hover:text-primary-100 transition-colors"></i>
+                        </div>
+                    </div>
+
+                    {% if activo.hostname or activo.ip_equipo or activo.mac_activo %}
+                    <div class="mt-12 pt-10 border-t-2 border-slate-100">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {% if activo.hostname %}
+                            <div
+                                class="p-4 bg-white rounded-2xl border-2 border-primary-50 border-b-4 border-b-primary-100 shadow-sm">
+                                <span class="block text-[9px] font-black text-slate-400 uppercase mb-1">Hostname</span>
+                                <span class="font-mono text-lg font-bold text-slate-700 truncate block">{{
+                                    activo.hostname }}</span>
+                            </div>
+                            {% endif %}
+                            {% if activo.ip_equipo %}
+                            <div
+                                class="p-4 bg-white rounded-2xl border-2 border-primary-50 border-b-4 border-b-primary-300 shadow-sm">
+                                <span class="block text-[9px] font-black text-slate-400 uppercase mb-1">Dirección
+                                    IP</span>
+                                <span class="font-mono text-lg font-bold text-slate-700 block">{{ activo.ip_equipo
+                                    }}</span>
+                            </div>
+                            {% endif %}
+                            {% if activo.mac_activo %}
+                            <div
+                                class="p-4 bg-white rounded-2xl border-2 border-primary-50 border-b-4 border-b-primary-300 shadow-sm">
+                                <span class="block text-[9px] font-black text-slate-400 uppercase mb-1">MAC
+                                    Address</span>
+                                <span class="font-mono text-base font-bold text-slate-700 truncate block">{{
+                                    activo.mac_activo }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if activo.hijos %}
+                <div
+                    class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border-2 border-slate-100 overflow-hidden">
+                    <div class="px-10 py-6 bg-slate-900 text-white flex justify-between items-center">
+                        <h3 class="font-black text-sm uppercase tracking-widest flex items-center gap-3">
+                            <span class="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
+                            Periféricos Vinculados
+                        </h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 border-b-2 border-slate-100">
+                                <tr>
+                                    <th class="px-10 py-4 text-[10px] font-black text-slate-400 uppercase">Identificador
+                                    </th>
+                                    <th class="px-10 py-4 text-[10px] font-black text-slate-400 uppercase">Descripción
+                                    </th>
+                                    <th class="px-10 py-4 text-[10px] font-black text-slate-400 uppercase text-right">
+                                        Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y-2 divide-slate-50">
+                                {% for hijo in activo.hijos %}
+                                <tr class="hover:bg-primary-50/20 transition-colors group">
+                                    <td class="px-10 py-5">
+                                        <div class="font-mono font-black text-primary-600 leading-tight">{{
+                                            hijo.codigo_qr }}</div>
+                                        <div class="text-[10px] text-slate-400 font-bold mt-0.5">{{ hijo.tipo.nom_tipo
+                                            }}</div>
+                                    </td>
+                                    <td class="px-10 py-5">
+                                        <div class="text-sm font-bold text-slate-700 truncate max-w-[200px]">{{
+                                            hijo.referencia }}</div>
+                                        <div class="flex items-center gap-1 mt-1">
+                                            <span
+                                                class="w-1.5 h-1.5 rounded-full {% if hijo.estado == 'Bueno' %}bg-emerald-500{% else %}bg-primary-500{% endif %}"></span>
+                                            <span
+                                                class="text-[10px] font-medium text-slate-400 uppercase tracking-tighter">{{
+                                                hijo.estado }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-10 py-5 text-right">
+                                        <a href="/ver/{{ hijo.id_activo }}"
+                                            class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 text-slate-400 group-hover:bg-primary-600 group-hover:text-white transition-all border-2 border-transparent">
+                                            <i class="fas fa-eye text-xs"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if activo.padre %}
+                <div
+                    class="relative p-8 rounded-[2.5rem] bg-slate-900 text-white overflow-hidden shadow-2xl border-2 border-slate-800">
+                    <div
+                        class="absolute top-0 right-0 w-32 h-32 red-gradient rounded-full blur-3xl opacity-20 -mr-16 -mt-16">
+                    </div>
+                    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div class="flex items-center gap-5">
+                            <div
+                                class="w-14 h-14 rounded-2xl bg-primary-600 flex items-center justify-center text-2xl border-2 border-primary-500 shadow-lg">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-primary-400 text-[10px] font-black uppercase tracking-widest">
+                                    Dependencia jerárquica</h4>
+                                <p class="text-xl font-bold leading-tight">Accesorio de: <span
+                                        class="text-primary-100">{{ activo.padre.tipo.nom_tipo }}</span></p>
+                            </div>
+                        </div>
+                        <a href="/ver/{{ activo.padre.id_activo }}"
+                            class="w-full md:w-auto px-8 py-3 bg-white text-slate-900 rounded-2xl font-black text-sm hover:bg-primary-50 transition-colors shadow-lg shadow-white/5 border-2 border-white">
+                            IR AL PADRE
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <div id="liveToast" class="fixed bottom-8 right-8 translate-y-24 opacity-0 transition-all duration-700 z-[100]">
+        <div
+            class="bg-slate-900 text-white rounded-3xl p-5 shadow-2xl flex items-center gap-4 min-w-[320px] border-2 border-white/10">
+            <div id="toastIcon"
+                class="w-12 h-12 rounded-2xl red-gradient flex items-center justify-center text-xl shadow-lg shadow-primary-500/20">
+            </div>
+            <div>
+                <p id="toastMessage" class="font-bold text-sm tracking-tight"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('msg')) {
+                const toast = document.getElementById('liveToast');
+                const message = document.getElementById('toastMessage');
+                const icon = document.getElementById('toastIcon');
+                const tipo = params.get('tipo');
+
+                message.textContent = params.get('msg');
+                icon.innerHTML = tipo === 'success' ? '<i class="fas fa-check"></i>' : '<i class="fas fa-exclamation text-brand-200"></i>';
+
+                toast.classList.remove('translate-y-24', 'opacity-0');
+                setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 6000);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+    </script>
+</body>
+
+</html>

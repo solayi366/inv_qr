@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Activo #{{ activo.id_activo }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fff1f2', 100: '#ffe4e6', 200: '#fecdd3',
+                            500: '#f43f5e', 600: '#e11d48', 700: '#be123c', 900: '#4c0519',
+                        }
+                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { 
+            background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+        }
+        .red-gradient { background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%); }
+        
+        /* CONTENEDOR DE INPUT CON GRADIENTE SUTIL */
+        .input-group-ruby {
+            display: flex;
+            align-items: stretch;
+            border: 2px solid #cbd5e1;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            transition: all 0.3s;
+            background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .input-group-ruby:focus-within {
+            border-color: #e11d48;
+            box-shadow: 0 0 0 4px rgba(255,241,242,1), 0 4px 12px rgba(225,29,72,0.1);
+            background: linear-gradient(to bottom, #ffffff 0%, #fff1f2 100%);
+        }
+        
+        /* ESPACIO PARA EL ICONO CON GRADIENTE */
+        .input-icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            border-right: 2px solid #e2e8f0;
+            color: #94a3b8;
+            transition: all 0.3s;
+            background: linear-gradient(to right, #f1f5f9, #f8fafc);
+        }
+        .input-group-ruby:focus-within .input-icon-box {
+            background: linear-gradient(to right, #ffe4e6, #fff1f2);
+            color: #e11d48;
+            border-right-color: #fecdd3;
+        }
+        
+        /* ÁREA DE ESCRITURA */
+        .input-ruby {
+            flex: 1;
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            outline: none;
+            background: transparent;
+        }
+        .input-ruby::placeholder {
+            color: #cbd5e1;
+        }
+        
+        .label-ruby {
+            font-size: 0.6875rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        /* Input bloqueado */
+        .input-ruby:read-only {
+            background: linear-gradient(to right, #f1f5f9, #e2e8f0);
+            color: #64748b;
+            cursor: not-allowed;
+        }
+        
+        /* Mejora sutil en las cards */
+        .bg-white {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased font-sans pb-20">
+
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-2 border-slate-200 px-4 py-3 md:px-8 shadow-sm">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="/ver/{{ activo.id_activo }}" class="flex items-center gap-2 group">
+                <div class="p-1.5 bg-white border-2 border-brand-100 rounded-xl group-hover:rotate-2 transition-transform shadow-sm">
+                    <i class="fas fa-qrcode text-brand-600 h-6 w-6 flex items-center justify-center"></i>
+                </div>
+                <span class="font-black text-slate-900 tracking-tighter text-base uppercase">Editar<span class="text-brand-600">Activo</span></span>
+            </a>
+            <a href="/ver/{{ activo.id_activo }}" class="text-xs font-bold text-slate-500 hover:text-brand-600 flex items-center gap-2 transition-all">
+                <i class="fas fa-arrow-left text-[10px]"></i> Cancelar y Volver
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-4 md:p-10">
+        
+        <div class="flex items-center gap-4 mb-8">
+            <div class="w-2 h-10 bg-brand-600 rounded-full shadow-[0_0_10px_#e11d48]"></div>
+            <h1 class="text-2xl font-black text-slate-900 tracking-tighter">
+                Editar <span class="text-brand-600">Activo #{{ activo.id_activo }}</span>
+            </h1>
+        </div>
+
+        <form action="/editar/{{ activo.id_activo }}" method="POST" id="formEditar" class="space-y-8">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <div class="lg:col-span-8 space-y-6">
+                    
+                    <div class="bg-white rounded-[2.5rem] border-2 border-slate-200 p-8 shadow-sm">
+                        <h3 class="label-ruby !mb-8 pb-2 border-b-2 border-slate-50">Definición</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="label-ruby">Tipo de Equipo *</label>
+                                <div class="input-group-ruby">
+                                    <select name="id_tipoequi" id="selector-tipo" class="input-ruby cursor-pointer" required onchange="actualizarFormulario()">
+                                        {% for tipo in tipos %}
+                                        <option value="{{ tipo.id_tipoequi }}" data-nombre="{{ tipo.nom_tipo }}" 
+                                            {% if tipo.id_tipoequi == activo.id_tipoequi %}selected{% endif %}>
+                                            {{ tipo.nom_tipo }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="grupo-hostname">
+                                <label class="label-ruby">Hostname (No Editable)</label>
+                                <div class="input-group-ruby">
+                                    <div class="input-icon-box">
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                    <input type="text" name="hostname" class="input-ruby" value="{{ activo.hostname or '' }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-[2.5rem] border-2 border-slate-200 p-8 shadow-sm">
+                        <h3 class="label-ruby !mb-8 pb-2 border-b-2 border-slate-50">Físico</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="label-ruby">Marca *</label>
+                                <div class="input-group-ruby">
+                                    <select name="id_marca" class="input-ruby cursor-pointer" required>
+                                        {% for marca in marcas %}
+                                        <option value="{{ marca.id_marca }}" {% if marca.id_marca == activo.id_marca %}selected{% endif %}>
+                                            {{ marca.nom_marca }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="col-modelo">
+                                <label class="label-ruby">Modelo</label>
+                                <div class="input-group-ruby">
+                                    <select name="id_modelo" id="selector-modelo" class="input-ruby cursor-pointer">
+                                        <option value="">-- Seleccione --</option>
+                                        {% for modelo in modelos %}
+                                        <option value="{{ modelo.id_modelo }}" data-tipo="{{ modelo.id_tipoequi }}"
+                                            {% if modelo.id_modelo == activo.id_modelo %}selected{% endif %}>
+                                            {{ modelo.nom_modelo }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="label-ruby">Referencia</label>
+                                <div class="input-group-ruby">
+                                    <input type="text" name="referencia" class="input-ruby" placeholder="ESCRIBA AQUÍ" value="{{ activo.referencia or '' }}">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="label-ruby text-brand-600">Serial *</label>
+                                <div class="input-group-ruby border-brand-100">
+                                    <input type="text" name="serial" class="input-ruby font-mono uppercase" placeholder="ESCRIBA AQUÍ" value="{{ activo.serial }}" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="grupo-redes" class="bg-white rounded-[2.5rem] border-2 border-slate-200 p-8 shadow-sm">
+                        <h3 class="label-ruby !text-brand-600 mb-6"><i class="fas fa-network-wired"></i> Red y Conectividad</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="label-ruby">IP</label>
+                                <div class="input-group-ruby">
+                                    <input type="text" name="ip_equipo" class="input-ruby font-mono" placeholder="0.0.0.0" value="{{ activo.ip_equipo or '' }}">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="label-ruby">MAC</label>
+                                <div class="input-group-ruby">
+                                    <input type="text" name="mac_activo" class="input-ruby font-mono" placeholder="00:00:00..." value="{{ activo.mac_activo or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="lg:col-span-4 space-y-6">
+                    
+                    <div class="bg-white rounded-[2.5rem] border-2 border-slate-200 p-8 shadow-sm">
+                        <h3 class="label-ruby !text-slate-400 mb-8 border-b border-slate-50 pb-2">Gestión</h3>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="label-ruby">Cédula Responsable</label>
+                                <div class="input-group-ruby">
+                                    <button class="input-icon-box cursor-pointer hover:text-brand-600" type="button" onclick="buscarEmpleado()" title="Buscar Responsable">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                    <input type="text" name="cod_responsable" id="input-cedula" class="input-ruby" 
+                                           value="{{ activo.cod_nom_responsable or '' }}" placeholder="Vacío = Bodega"
+                                           onkeydown="if(event.key === 'Enter'){ event.preventDefault(); buscarEmpleado(); }">
+                                </div>
+                                <div id="alerta-empleado" class="mt-3 p-3 bg-brand-50 rounded-xl border border-brand-100 text-[10px] font-bold text-brand-700">
+                                    {% if activo.responsable %}
+                                        <i class="fas fa-check"></i> {{ activo.responsable.nom_emple }}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="label-ruby">Estado *</label>
+                                <div class="input-group-ruby">
+                                    <select name="estado" class="input-ruby cursor-pointer">
+                                        <option value="Bueno" {% if activo.estado == 'Bueno' %}selected{% endif %}>✅ Bueno</option>
+                                        <option value="Malo" {% if activo.estado == 'Malo' %}selected{% endif %}>❌ Malo</option>
+                                        <option value="En Reparación" {% if activo.estado == 'En Reparación' %}selected{% endif %}>🔧 Reparación</option>
+                                        <option value="Baja" {% if activo.estado == 'Baja' %}selected{% endif %}>🗑 De Baja</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="seccion-padre" class="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-xl border-2 border-slate-800">
+                        <label class="label-ruby !text-brand-500">Equipo Padre</label>
+                        <select name="id_padre_activo" class="w-full bg-white/5 border-2 border-white/10 rounded-xl py-3 px-4 text-xs font-bold outline-none">
+                            <option value="" class="text-slate-800">-- Ninguno --</option>
+                            {% for padre in posibles_padres %}
+                            <option value="{{ padre.id_activo }}" {% if padre.id_activo == activo.id_padre_activo %}selected{% endif %} class="text-slate-800">
+                                {{ padre.tipo.nom_tipo }} | {{ padre.hostname or padre.serial }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full py-5 red-gradient text-white rounded-[2rem] font-black uppercase shadow-xl shadow-brand-200 hover:scale-[1.02] transition-all flex items-center justify-center gap-3">
+                        <i class="fas fa-save text-xl"></i> GUARDAR CAMBIOS
+                    </button>
+
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            actualizarFormulario();
+        });
+
+        // --- FUNCIÓN CORREGIDA PARA MATCHEAR TU API ---
+        async function buscarEmpleado() {
+            const cedulaInput = document.getElementById('input-cedula');
+            const alerta = document.getElementById('alerta-empleado');
+            const cedula = cedulaInput.value.trim();
+
+            if (!cedula) {
+                alerta.innerHTML = "";
+                return;
+            }
+
+            try {
+                alerta.innerHTML = '<span class="text-slate-400"><i class="fas fa-spinner fa-spin"></i> Buscando...</span>';
+                
+                const response = await fetch(`/api/empleado/${cedula}`);
+                
+                if (response.ok) {
+                    // SI LA RESPUESTA ES EXITOSA (Status 200)
+                    const data = await response.json();
+                    
+                    // Mostramos los datos reales que devuelve tu API (nombre, nom_area)
+                    alerta.innerHTML = `<span class="text-green-600 font-bold"><i class="fas fa-check-circle"></i> ${data.nombre} (${data.nom_area})</span>`;
+                    cedulaInput.parentElement.style.borderColor = "#10b981"; // Verde
+                } else {
+                    // SI LA RESPUESTA ES ERROR (Status 404)
+                    alerta.innerHTML = `<span class="text-red-600 font-bold"><i class="fas fa-times-circle"></i> Empleado no encontrado (Verifique Cédula)</span>`;
+                    cedulaInput.parentElement.style.borderColor = "#ef4444"; // Rojo
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                alerta.innerHTML = '<span class="text-red-700">Error de conexión</span>';
+            }
+        }
+
+        function actualizarFormulario() {
+            var selectorTipo = document.getElementById("selector-tipo");
+            if (!selectorTipo.value) return;
+
+            var idTipo = selectorTipo.value;
+            var option = selectorTipo.options[selectorTipo.selectedIndex];
+            var nombreTipo = option ? option.getAttribute("data-nombre").toUpperCase() : "";
+            
+            var esPC = ["TABLET", "COMPUTADOR", "PORTATIL", "PC", "SERVIDOR"].some(t => nombreTipo.includes(t));
+            document.getElementById("grupo-hostname").style.display = esPC ? "block" : "none";
+            document.getElementById("grupo-redes").style.display = esPC ? "block" : "none";
+            
+            var selectPadre = document.getElementsByName("id_padre_activo")[0];
+            if (esPC) {
+                selectPadre.value = ""; 
+                selectPadre.disabled = true; 
+                document.getElementById("seccion-padre").style.opacity = "0.5";
+            } else {
+                selectPadre.disabled = false; 
+                document.getElementById("seccion-padre").style.opacity = "1";
+            }
+
+            // Mostrar/Ocultar Modelo
+            var colModelo = document.getElementById("col-modelo");
+            var selectModelo = document.getElementById("selector-modelo");
+            var llevaModelo = ["TABLET", "PORTATIL", "COMPUTADOR"].some(t => nombreTipo.includes(t));
+
+            if (llevaModelo) {
+                colModelo.style.display = "block";
+                var opciones = selectModelo.querySelectorAll('option');
+                opciones.forEach(opt => {
+                    if (opt.value === "") return;
+                    if (opt.getAttribute('data-tipo') == idTipo) {
+                        opt.style.display = "block";
+                    } else {
+                        opt.style.display = "none";
+                    }
+                });
+            } else {
+                colModelo.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

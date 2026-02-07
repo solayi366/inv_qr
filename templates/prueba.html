@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoja de Vida - Activo {{ activo.id_activo }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: { 50: '#fff1f2', 100: '#ffe4e6', 500: '#f43f5e', 600: '#e11d48', 700: '#be123c' } },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background: radial-gradient(circle at top left, #fff1f2, #f8fafc); min-height: 100vh; }
+        .glass-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); border: 2px solid rgba(225, 29, 72, 0.15); }
+        .red-gradient { background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%); }
+    </style>
+</head>
+<body class="text-slate-800 antialiased pb-12">
+
+    <nav class="sticky top-0 z-50 glass-card mb-8 px-6 py-4 shadow-sm border-b-2 border-primary-100">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center text-primary-700 hover:text-primary-500 font-bold tracking-tight">
+                <i class="fas fa-arrow-left mr-2"></i> VOLVER AL LISTADO
+            </a>
+            <div class="hidden md:block">
+                <span class="px-3 py-1 bg-primary-50 text-primary-600 rounded-full text-xs font-bold border-2 border-primary-100">GESTIÓN DE INVENTARIO</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+            <div class="flex items-start gap-5">
+                <div class="p-4 bg-white rounded-3xl shadow-md border-2 border-slate-100"><img src="/static/logo.png" class="h-12 w-auto"></div>
+                <div>
+                    <span class="text-primary-600 font-extrabold text-sm uppercase tracking-[0.2em]">Ficha Técnica</span>
+                    <h1 class="text-3xl md:text-4xl font-black text-slate-900 leading-none mt-1">Activo <span class="text-transparent bg-clip-text red-gradient">#{{ activo.id_activo }}</span></h1>
+                </div>
+            </div>
+
+            {% if user %}
+            <div class="flex flex-wrap gap-3">
+                <a href="/editar/{{ activo.id_activo }}" class="px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-200 rounded-2xl shadow-sm font-bold text-sm flex items-center gap-2">
+                    <i class="fas fa-pen-nib text-primary-500"></i> Editar
+                </a>
+                
+                <a href="/historial/{{ activo.id_activo }}" class="px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-200 rounded-2xl shadow-sm font-bold text-sm flex items-center gap-2">
+                    <i class="fas fa-history text-blue-500"></i> Historial
+                </a>
+
+                <a href="/imprimir/{{ activo.id_activo }}" target="_blank" class="px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-2xl shadow-lg font-bold text-sm flex items-center gap-2">
+                    <i class="fas fa-print"></i> Imprimir
+                </a>
+                {% if not activo.padre %}
+                <a href="/exportar_individual/{{ activo.id_activo }}" class="px-6 py-3 red-gradient hover:opacity-90 text-white rounded-2xl shadow-lg shadow-primary-200 font-bold text-sm flex items-center gap-2">
+                    <i class="fas fa-download"></i> Excel
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-4 space-y-6">
+                <div class="glass-card rounded-[2.5rem] p-10 shadow-2xl text-center relative overflow-hidden">
+                    <div class="inline-block p-6 bg-white rounded-[2rem] shadow-xl border-2 border-primary-50 mb-6">
+                        <img src="/static/qrcodes/{{ activo.codigo_qr }}.png" class="w-44 h-44">
+                    </div>
+                    <h2 class="text-4xl font-black text-slate-800 mb-6 tracking-tighter">{{ activo.codigo_qr }}</h2>
+                    <div class="inline-flex items-center">
+                        <span class="px-8 py-2.5 bg-slate-100 text-slate-600 rounded-full text-xs font-black shadow-inner uppercase tracking-wider">
+                            {{ activo.estado }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="red-gradient rounded-[2.5rem] p-8 text-white shadow-xl relative overflow-hidden">
+                    <h3 class="text-primary-100/60 text-xs font-black uppercase tracking-widest mb-6">Custodio</h3>
+                    {% if activo.responsable %}
+                    <div class="flex items-center gap-5">
+                        <div class="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-3xl border-2 border-white/20"><i class="fas fa-id-card"></i></div>
+                        <div>
+                            <p class="font-black text-xl leading-tight">{{ activo.responsable.nom_emple }}</p>
+                            <p class="text-primary-100/80 text-sm font-medium mt-1">{{ activo.responsable.area.nom_area }}</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="flex items-center gap-4 py-2"><i class="fas fa-warehouse text-3xl opacity-50"></i><span class="font-bold text-lg">En Bodega</span></div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-6">
+                <div class="glass-card rounded-[2.5rem] p-10 shadow-sm border-2 border-primary-50">
+                    <h3 class="text-xl font-black text-slate-900 mb-10 border-b pb-4">Detalles Técnicos</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                        <div><span class="block text-[10px] font-black text-slate-400 uppercase">Tipo</span><p class="font-bold text-lg">{{ activo.tipo.nom_tipo }}</p></div>
+                        <div><span class="block text-[10px] font-black text-slate-400 uppercase">Marca/Modelo</span><p class="font-bold text-lg">{{ activo.marca.nom_marca }} {{ activo.modelo.nom_modelo if activo.modelo else '' }}</p></div>
+                        <div class="md:col-span-2 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            <span class="block text-[10px] font-black text-slate-400 uppercase">Serial</span>
+                            <p class="font-mono text-2xl font-black text-primary-700">{{ activo.serial }}</p>
+                        </div>
+                    </div>
+                    {% if activo.hostname or activo.ip_equipo or activo.mac_activo %}
+                    <div class="mt-8 pt-8 border-t border-slate-100 grid grid-cols-3 gap-4">
+                        <div><span class="text-[9px] font-bold text-slate-400 block">HOSTNAME</span><span class="font-mono font-bold">{{ activo.hostname or '-' }}</span></div>
+                        <div><span class="text-[9px] font-bold text-slate-400 block">IP</span><span class="font-mono font-bold">{{ activo.ip_equipo or '-' }}</span></div>
+                        <div><span class="text-[9px] font-bold text-slate-400 block">MAC</span><span class="font-mono font-bold">{{ activo.mac_activo or '-' }}</span></div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if activo.hijos %}
+                <div class="bg-white rounded-[2.5rem] shadow-xl border-2 border-slate-100 overflow-hidden">
+                    <div class="px-8 py-4 bg-slate-900 text-white font-bold text-sm uppercase tracking-widest">Periféricos Vinculados</div>
+                    <div class="p-8">
+                        <ul class="space-y-3">
+                            {% for hijo in activo.hijos %}
+                            <li class="flex justify-between items-center border-b border-slate-50 pb-2 last:border-0">
+                                <div><span class="font-mono font-bold text-primary-600">{{ hijo.codigo_qr }}</span> <span class="text-sm font-bold text-slate-600">{{ hijo.tipo.nom_tipo }}</span></div>
+                                <a href="/ver/{{ hijo.id_activo }}" class="text-xs font-bold text-blue-500 hover:underline">Ver</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if activo.padre %}
+                <div class="p-6 bg-slate-100 rounded-3xl text-center border-2 border-slate-200">
+                    <p class="text-xs font-bold text-slate-500 uppercase mb-2">Este activo pertenece a:</p>
+                    <a href="/ver/{{ activo.padre.id_activo }}" class="text-lg font-black text-primary-600 hover:underline">{{ activo.padre.tipo.nom_tipo }} ({{ activo.padre.serial }})</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+    
+    <div id="liveToast" class="fixed bottom-8 right-8 translate-y-24 opacity-0 transition-all duration-700 z-[100]">
+        <div class="bg-slate-900 text-white rounded-3xl p-5 shadow-2xl flex items-center gap-4 min-w-[320px] border-2 border-white/10">
+            <div id="toastIcon" class="w-12 h-12 rounded-2xl red-gradient flex items-center justify-center text-xl shadow-lg shadow-primary-500/20"></div>
+            <div><p id="toastMessage" class="font-bold text-sm tracking-tight"></p></div>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('load', () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('msg')) {
+                const toast = document.getElementById('liveToast'), msg = document.getElementById('toastMessage'), icon = document.getElementById('toastIcon');
+                msg.textContent = params.get('msg');
+                icon.innerHTML = params.get('tipo') === 'success' ? '<i class="fas fa-check"></i>' : '<i class="fas fa-exclamation"></i>';
+                toast.classList.remove('translate-y-24', 'opacity-0');
+                setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 6000);
+            }
+        });
+    </script>
+</body>
+</html>

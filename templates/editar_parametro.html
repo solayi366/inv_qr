@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Parámetro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f6f9; }
+        .card-header-custom { background-color: #b33515; color: white; }
+        .btn-corporate { background-color: #b33515; color: white; border: none; }
+        .btn-corporate:hover { background-color: #8f2a11; color: white; }
+    </style>
+</head>
+<body class="d-flex align-items-center min-vh-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow border-0">
+                    <div class="card-header card-header-custom py-3">
+                        <h5 class="mb-0 fw-bold"><i class="fas fa-edit me-2"></i>Editar {{ tipo|upper }}</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        {% set item_id = item.cod_nom if tipo == 'empleado' else (item.id_marca if tipo == 'marca' else (item.id_modelo if tipo == 'modelo' else (item.id_tipoequi if tipo == 'tipo' else item.id_area))) %}
+                        
+                        <form action="/editar_parametro/{{ tipo }}/{{ item_id }}" method="POST">
+                            
+                            {% if tipo == 'empleado' %}
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Cédula / Código (Editable)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-id-card"></i></span>
+                                    <input type="text" name="nuevo_codigo" class="form-control fw-bold text-dark" value="{{ item.cod_nom }}" required>
+                                </div>
+                                <div class="form-text text-muted small">Si cambias esto, todos los activos se moverán al nuevo código.</div>
+                            </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Nombre / Descripción</label>
+                                {% set valor_nombre = item.nom_emple if tipo == 'empleado' else (item.nom_marca if tipo == 'marca' else (item.nom_modelo if tipo == 'modelo' else (item.nom_tipo if tipo == 'tipo' else item.nom_area))) %}
+                                <input type="text" name="nombre" class="form-control" value="{{ valor_nombre }}" required>
+                            </div>
+
+                            {% if tipo == 'modelo' %}
+                            <div class="row g-2">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label text-secondary small text-uppercase fw-bold">Marca</label>
+                                    <select name="id_marca" class="form-select">
+                                        {% for m in marcas %}
+                                        <option value="{{ m.id_marca }}" {% if m.id_marca == item.id_marca %}selected{% endif %}>
+                                            {{ m.nom_marca }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label text-secondary small text-uppercase fw-bold">Tipo</label>
+                                    <select name="id_tipoequi" class="form-select">
+                                        {% for t in tipos %}
+                                        <option value="{{ t.id_tipoequi }}" {% if t.id_tipoequi == item.id_tipoequi %}selected{% endif %}>
+                                            {{ t.nom_tipo }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if tipo == 'empleado' %}
+                            <div class="mb-3">
+                                <label class="form-label text-secondary small text-uppercase fw-bold">Área Asignada</label>
+                                <select name="id_area" class="form-select">
+                                    {% for a in areas %}
+                                    <option value="{{ a.id_area }}" {% if a.id_area == item.id_area %}selected{% endif %}>
+                                        {{ a.nom_area }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+
+                            <div class="d-grid gap-2 mt-4 pt-2">
+                                <button type="submit" class="btn btn-corporate shadow-sm">Guardar Cambios</button>
+                                <a href="/parametros" class="btn btn-outline-secondary border-0">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
