@@ -10,44 +10,69 @@
 <div class="max-w-6xl mx-auto">
     <h1 class="text-3xl font-extrabold text-slate-900 mb-8">Tablero de Control</h1>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        
+        <div class="bg-rose-600 text-white p-6 rounded-2xl shadow-lg shadow-rose-200 relative overflow-hidden group cursor-pointer transition-transform hover:scale-105" onclick="window.location.href='/gestion-novedades'">
+            <p class="text-xs font-bold text-rose-100 uppercase tracking-wider">Mesa de Ayuda</p>
+            <div class="flex items-end gap-2">
+                <h2 class="text-4xl font-black mt-2" id="totalPendientes">0</h2>
+                <span class="text-sm font-bold mb-1 opacity-80">Pendientes</span>
+            </div>
+            <i class="fas fa-bell absolute bottom-4 right-4 text-rose-500 text-6xl -z-0 group-hover:scale-110 transition-transform"></i>
+            <div id="pingAnim" class="hidden absolute top-4 right-4 w-3 h-3 bg-white rounded-full animate-ping"></div>
+        </div>
+
         <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
             <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Activos</p>
             <h2 class="text-4xl font-black text-slate-900 mt-2" id="totalActivos">...</h2>
             <i class="fas fa-cubes absolute bottom-4 right-4 text-brand-50 text-6xl -z-0"></i>
         </div>
+
         <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
             <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Operativos</p>
             <h2 class="text-4xl font-black text-emerald-600 mt-2" id="totalBuenos">...</h2>
             <i class="fas fa-check-circle absolute bottom-4 right-4 text-emerald-50 text-6xl -z-0"></i>
         </div>
+
         <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Atención</p>
-            <h2 class="text-4xl font-black text-red-600 mt-2" id="totalProblemas">...</h2>
-            <i class="fas fa-tools absolute bottom-4 right-4 text-red-50 text-6xl -z-0"></i>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Requieren Atención</p>
+            <h2 class="text-4xl font-black text-amber-500 mt-2" id="totalProblemas">...</h2>
+            <i class="fas fa-exclamation-triangle absolute bottom-4 right-4 text-amber-50 text-6xl -z-0"></i>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 class="font-bold text-slate-800 mb-4">Estado del Inventario</h3>
-            <div class="h-64"><canvas id="chartEstado"></canvas></div>
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6">Estado de la Flota</h3>
+            <div class="h-64">
+                <canvas id="chartEstado"></canvas>
+            </div>
         </div>
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 class="font-bold text-slate-800 mb-4">Top Marcas</h3>
-            <div class="h-64"><canvas id="chartMarca"></canvas></div>
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6">Top 5 Marcas</h3>
+            <div class="h-64">
+                <canvas id="chartMarca"></canvas>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    async function cargarDatos() {
-        try {
-            const res = await fetch('/api/stats');
-            const data = await res.json();
+    fetch('/api/stats')
+        .then(res => res.json())
+        .then(data => {
             document.getElementById('totalActivos').textContent = data.total;
+            
+            // Actualizar Pendientes
+            const pendientes = data.pendientes || 0;
+            document.getElementById('totalPendientes').textContent = pendientes;
+            if (pendientes > 0) {
+                document.getElementById('pingAnim').classList.remove('hidden');
+            }
+
             const buenos = data.estados.find(e => e.label === 'Bueno')?.count || 0;
             document.getElementById('totalBuenos').textContent = buenos;
+            
             const malos = data.estados.find(e => e.label === 'Malo')?.count || 0;
             const rep = data.estados.find(e => e.label === 'En Reparación')?.count || 0;
             document.getElementById('totalProblemas').textContent = malos + rep;
@@ -56,7 +81,11 @@
                 type: 'doughnut',
                 data: {
                     labels: data.estados.map(e => e.label),
-                    datasets: [{ data: data.estados.map(e => e.count), backgroundColor: ['#10b981', '#ef4444', '#f59e0b', '#64748b'], borderWidth: 0 }]
+                    datasets: [{ 
+                        data: data.estados.map(e => e.count), 
+                        backgroundColor: ['#10b981', '#ef4444', '#f59e0b', '#64748b'], 
+                        borderWidth: 0 
+                    }]
                 },
                 options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
             });
@@ -65,12 +94,19 @@
                 type: 'bar',
                 data: {
                     labels: data.marcas.map(m => m.label),
-                    datasets: [{ label: 'Cantidad', data: data.marcas.map(m => m.count), backgroundColor: '#e11d48', borderRadius: 4 }]
+                    datasets: [{ 
+                        label: 'Cantidad', 
+                        data: data.marcas.map(m => m.count), 
+                        backgroundColor: '#e11d48', 
+                        borderRadius: 4 
+                    }]
                 },
-                options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+                options: { 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { y: { beginAtZero: true } } 
+                }
             });
-        } catch(e) { console.error(e); }
-    }
-    document.addEventListener('DOMContentLoaded', cargarDatos);
+        });
 </script>
 {% endblock %}

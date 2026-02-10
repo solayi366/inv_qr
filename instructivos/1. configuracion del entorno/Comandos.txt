@@ -1,9 +1,0 @@
-ACTIVAR ENTORNO VIRTUAL
-source venv/bin/actívate
-MANTENER EL SERVIDOR ENCENDIDO
-nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > log.txt 2>&1 &
-
-export DB_SERVER="invqr.chii2mgga6uz.us-east-2.rds.amazonaws.com"
-export DB_NAME="invqr"
-export DB_USER="admin"
-export DB_PASSWORD="3nviaBuca"

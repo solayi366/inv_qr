@@ -14,7 +14,7 @@ from fastapi.responses import RedirectResponse, StreamingResponse
 from starlette.middleware.sessions import SessionMiddleware 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError 
-from sqlalchemy import func # <--- NUEVO: Para contar y agrupar
+from sqlalchemy import func 
 from passlib.context import CryptContext 
 
 from openpyxl import Workbook, load_workbook
@@ -22,7 +22,7 @@ from openpyxl import Workbook, load_workbook
 from . import models, schemas, database, utils
 
 # --- CONFIGURACIÓN ---
-BASE_URL = "https://enviabuca.ddns.net/" 
+BASE_URL = "https://inventario.envia06.com/" 
 SECRET_KEY = "SUPXROSEVREUOIC4MBIPME" 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -94,7 +94,7 @@ def api_buscar_empleado(id: str, db: Session = Depends(get_db)):
         "nom_area": empleado.area.nom_area if empleado.area else "SIN ÁREA"
     }
 
-# --- NUEVO: API DE ESTADÍSTICAS ---
+# --- API DE ESTADÍSTICAS (ACTUALIZADA) ---
 @app.get("/api/stats")
 def api_estadisticas(request: Request, db: Session = Depends(get_db)):
     if not request.session.get("usuario"): raise HTTPException(status_code=401)
@@ -102,24 +102,30 @@ def api_estadisticas(request: Request, db: Session = Depends(get_db)):
     # 1. Totales Generales
     total_activos = db.query(models.ActivoTec).count()
     
-    # 2. Por Estado
+    # 2. Tickets Pendientes (NUEVO)
+    tickets_pendientes = db.query(models.Novedad).filter(
+        models.Novedad.estado_ticket != "Cerrado"
+    ).count()
+    
+    # 3. Por Estado
     por_estado = db.query(models.ActivoTec.estado, func.count(models.ActivoTec.id_activo))\
                    .group_by(models.ActivoTec.estado).all()
     
-    # 3. Por Marca (Top 5)
+    # 4. Por Marca (Top 5)
     por_marca = db.query(models.Marca.nom_marca, func.count(models.ActivoTec.id_activo))\
                   .join(models.Marca)\
                   .group_by(models.Marca.nom_marca)\
                   .order_by(func.count(models.ActivoTec.id_activo).desc())\
                   .limit(5).all()
 
-    # 4. Por Tipo
+    # 5. Por Tipo
     por_tipo = db.query(models.TipoEquipo.nom_tipo, func.count(models.ActivoTec.id_activo))\
                  .join(models.TipoEquipo)\
                  .group_by(models.TipoEquipo.nom_tipo).all()
 
     return {
         "total": total_activos,
+        "pendientes": tickets_pendientes, # <-- Enviamos este dato nuevo
         "estados": [{"label": e[0], "count": e[1]} for e in por_estado],
         "marcas": [{"label": m[0], "count": m[1]} for m in por_marca],
         "tipos": [{"label": t[0], "count": t[1]} for t in por_tipo]
@@ -142,7 +148,7 @@ def login_form(request: Request): return templates.TemplateResponse("login.html"
 def login(request: Request, username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
     user = db.query(models.Usuario).filter(models.Usuario.username == username).first()
     if not user or not verify_password(password, user.contraseña):
-        return templates.TemplateResponse("login.html", {"request": request, "error": "Credenciales inválidas"})
+        return templates.TemplateResponse("index.html", {"request": request, "error": "Credenciales inválidas"})
     request.session["usuario"] = user.username
     return RedirectResponse(url="/?msg=Bienvenido al Sistema&tipo=success", status_code=303)
 
@@ -157,7 +163,6 @@ def pagina_principal(request: Request, db: Session = Depends(get_db)):
         "request": request, "activos": db.query(models.ActivoTec).all(), "user": request.session.get("usuario")
     })
 
-# --- NUEVO: RUTA DASHBOARD ---
 @app.get("/dashboard", response_class=templates.TemplateResponse)
 def dashboard_view(request: Request):
     if not request.session.get("usuario"): return RedirectResponse("/login", status_code=303)
@@ -584,6 +589,38 @@ def procesar_editar_parametro(request: Request, tipo: str, id: str, nombre: str 
     except Exception as e:
         db.rollback()
         return RedirectResponse(f"/parametros?msg=Error al editar: {str(e)}&tipo=danger", status_code=303)
+    
+    # --- MÓDULO DE NOVEDADES Y MANTENIMIENTO ---
+
+@app.get("/novedad/{id}", response_class=templates.TemplateResponse)
+def form_novedad(request: Request, id: int, db: Session = Depends(get_db)):
+    """Muestra el formulario para reportar una novedad o mantenimiento"""
+    if not request.session.get("usuario"): return RedirectResponse("/login", status_code=303)
+    
+    activo = db.query(models.ActivoTec).filter(models.ActivoTec.id_activo == id).first()
+    if not activo: raise HTTPException(status_code=404)
+    
+    return templates.TemplateResponse("novedad.html", {
+        "request": request, 
+        "activo": activo
+    })
+
+@app.post("/novedad/{id}")
+def registrar_novedad_evento(request: Request, id: int, tipo_novedad: str = Form(...), descripcion: str = Form(...), db: Session = Depends(get_db)):
+    """Guarda la novedad en el historial del activo"""
+    usuario_actual = request.session.get("usuario")
+    if not usuario_actual: return RedirectResponse("/login", status_code=303)
+    
+    try:
+        # Usamos la función existente registrar_historia pero con el tipo de novedad seleccionado
+        # Esto nos ahorra crear tablas nuevas y centraliza todo en el timeline
+        registrar_historia(db, id, tipo_novedad.upper(), descripcion, usuario_actual)
+        db.commit()
+        
+        return RedirectResponse(f"/historial/{id}?msg=Novedad registrada correctamente&tipo=success", status_code=303)
+    except Exception as e:
+        print(f"Error novedad: {e}")
+        return RedirectResponse(f"/ver/{id}?msg=Error al registrar: {str(e)}&tipo=danger", status_code=303)
 
 @app.get("/sistema/reset-fabrica")
 def reset_base_de_datos(request: Request, db: Session = Depends(get_db)):
@@ -600,3 +637,199 @@ def reset_base_de_datos(request: Request, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         return RedirectResponse(f"/?msg=Error al limpiar: {str(e)}&tipo=danger", status_code=303)
+    
+# ==========================================
+# MÓDULO DE REPORTE DE NOVEDADES (PORTAL)
+# ==========================================
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import shutil
+import os
+
+# Asegurar directorio de evidencias
+os.makedirs("static/uploads", exist_ok=True)
+
+# --- CONFIGURACIÓN CORREO (Ajusta esto) ---
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+# ¡OJO! Si usas Gmail, la contraseña NO es la de tu login habitual.
+# Debes generar una "Contraseña de Aplicación" en tu cuenta de Google > Seguridad.
+SMTP_USER = "solayitapias1@gmail.com" 
+SMTP_PASSWORD = "rrvz xzmd ngaw mxch" 
+EMAIL_DESTINO = "sisbuca@envia.co"
+
+def enviar_alerta_email(asunto, mensaje_html):
+    print(f"📧 Intentando enviar correo a {EMAIL_DESTINO}...")
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = SMTP_USER
+        msg['To'] = EMAIL_DESTINO
+        msg['Subject'] = asunto
+        msg.attach(MIMEText(mensaje_html, 'html'))
+
+        # Conexión segura
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls() 
+        server.login(SMTP_USER, SMTP_PASSWORD)
+        text = msg.as_string()
+        server.sendmail(SMTP_USER, EMAIL_DESTINO, text)
+        server.quit()
+        print("✅ Correo enviado EXITOSAMENTE.")
+        return True
+    except Exception as e:
+        print(f"❌ ERROR CRÍTICO ENVIANDO CORREO: {str(e)}")
+        return False
+
+# 1. VISTA DEL PORTAL (Solo pide cédula al inicio)
+@app.get("/portal-reportes", response_class=templates.TemplateResponse)
+def vista_portal_reportes(request: Request):
+    return templates.TemplateResponse("portal_reportes.html", {"request": request})
+
+# 2. API: BUSCAR ACTIVOS POR CÉDULA (AJAX)
+@app.get("/api/mis-activos/{cedula}")
+def buscar_mis_activos(cedula: str, db: Session = Depends(get_db)):
+    # Buscamos activos donde el responsable coincida
+    # Nota: Asumimos que 'cod_nom_responsable' guarda la cédula o código
+    activos = db.query(models.ActivoTec).filter(
+        models.ActivoTec.cod_nom_responsable == cedula,
+        models.ActivoTec.estado != "Baja" # No mostrar activos dados de baja
+    ).all()
+    
+    if not activos:
+        return {"encontrado": False, "mensaje": "No se encontraron activos asignados a este documento."}
+    
+    # Buscamos el nombre del empleado del primer activo para saludar
+    nombre_empleado = activos[0].responsable.nom_emple if activos[0].responsable else "Usuario"
+
+    lista_activos = []
+    for a in activos:
+        lista_activos.append({
+            "id": a.id_activo,
+            "tipo": a.tipo.nom_tipo,
+            "marca": a.marca.nom_marca,
+            "modelo": a.modelo.nom_modelo if a.modelo else "Genérico",
+            "serial": a.serial,
+            "foto_qr": f"/static/qrcodes/{a.codigo_qr}.png"
+        })
+        
+    return {
+        "encontrado": True, 
+        "empleado": nombre_empleado,
+        "activos": lista_activos
+    }
+
+# 3. PROCESAR EL REPORTE (Guarda en BD y envía correo)
+@app.post("/crear-ticket")
+async def crear_ticket_novedad(
+    request: Request,
+    cedula: str = Form(...),
+    id_activo: int = Form(...),
+    tipo_dano: str = Form(...),
+    descripcion: str = Form(...),
+    foto: UploadFile = File(None),
+    db: Session = Depends(get_db)
+):
+    try:
+        # 1. Procesar Foto (Si existe)
+        ruta_foto = ""
+        if foto and foto.filename:
+            ext = foto.filename.split(".")[-1]
+            nombre_archivo = f"ticket_{id_activo}_{uuid.uuid4().hex[:6]}.{ext}"
+            ruta_guardada = f"static/uploads/{nombre_archivo}"
+            with open(ruta_guardada, "wb") as buffer:
+                shutil.copyfileobj(foto.file, buffer)
+            ruta_foto = f"{BASE_URL}{ruta_guardada}"
+
+        # 2. Buscar datos del activo para el correo y BD
+        activo = db.query(models.ActivoTec).get(id_activo)
+        nombre_empleado = activo.responsable.nom_emple if activo.responsable else "Desconocido"
+
+        # 3. Guardar en Nueva Tabla Novedades
+        nuevo_ticket = models.Novedad(
+            cedula_reportante=cedula,
+            nombre_reportante=nombre_empleado,
+            id_activo=id_activo,
+            tipo_daño=tipo_dano,
+            descripcion=descripcion,
+            evidencia_foto=ruta_foto
+        )
+        db.add(nuevo_ticket)
+        
+        # 4. Actualizar Estado del Activo (Opcional, pero recomendado)
+        activo.estado = "Malo" # O "Reportado"
+        
+        # 5. Dejar rastro en el Historial General también
+        registrar_historia(db, id_activo, "REPORTE_USUARIO", f"Falla reportada: {descripcion}", "PORTAL_WEB")
+        
+        db.commit()
+
+        # 6. Enviar Correo
+        asunto = f"🚨 TICKET #{nuevo_ticket.id_novedad} - {activo.tipo.nom_tipo} - {nombre_empleado}"
+        html = f"""
+        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd;">
+            <h2 style="color: #d32f2f;">Nuevo Reporte de Falla</h2>
+            <p>El usuario <strong>{nombre_empleado}</strong> (CC: {cedula}) ha reportado una novedad.</p>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr style="background-color: #f9f9f9;"><td style="padding: 8px;"><strong>Activo:</strong></td><td style="padding: 8px;">{activo.tipo.nom_tipo} {activo.marca.nom_marca}</td></tr>
+                <tr><td style="padding: 8px;"><strong>Serial:</strong></td><td style="padding: 8px;">{activo.serial}</td></tr>
+                <tr style="background-color: #f9f9f9;"><td style="padding: 8px;"><strong>Tipo Daño:</strong></td><td style="padding: 8px;">{tipo_dano}</td></tr>
+                <tr><td style="padding: 8px;"><strong>Descripción:</strong></td><td style="padding: 8px;">{descripcion}</td></tr>
+            </table>
+            
+            <div style="margin-top: 20px;">
+                <strong>Evidencia Fotográfica:</strong><br>
+                {f'<img src="{ruta_foto}" width="300" style="border: 2px solid #333; margin-top:10px;">' if ruta_foto else '<i>No se adjuntó foto</i>'}
+            </div>
+            
+            <p style="margin-top: 30px; font-size: 12px; color: #666;">Sistema Automático INVRQR</p>
+        </div>
+        """
+        
+        enviar_alerta_email(asunto, html)
+
+        return templates.TemplateResponse("portal_exito.html", {"request": request, "id_ticket": nuevo_ticket.id_novedad})
+
+    except Exception as e:
+        print(f"Error creando ticket: {e}")
+        return RedirectResponse("/portal-reportes?error=true", status_code=303)
+    
+    # --- GESTIÓN INTERNA DE NOVEDADES (ADMIN) ---
+
+@app.get("/gestion-novedades", response_class=templates.TemplateResponse)
+def panel_novedades(request: Request, db: Session = Depends(get_db)):
+    """Bandeja de entrada de tickets no resueltos"""
+    if not request.session.get("usuario"): return RedirectResponse("/login", status_code=303)
+    
+    # Traemos solo los que NO están cerrados, ordenados por fecha (más reciente primero)
+    tickets = db.query(models.Novedad).filter(
+        models.Novedad.estado_ticket != "Cerrado"
+    ).order_by(models.Novedad.fecha_reporte.desc()).all()
+    
+    return templates.TemplateResponse("lista_novedades.html", {
+        "request": request, 
+        "tickets": tickets
+    })
+
+@app.post("/novedad/resolver/{id}")
+def resolver_novedad(request: Request, id: int, solucion: str = Form(...), db: Session = Depends(get_db)):
+    """Cierra el ticket y actualiza el historial"""
+    if not request.session.get("usuario"): return RedirectResponse("/login", status_code=303)
+    
+    ticket = db.query(models.Novedad).get(id)
+    if not ticket: return RedirectResponse("/gestion-novedades?msg=Ticket no encontrado&tipo=danger", status_code=303)
+    
+    # 1. Cambiar estado del ticket
+    ticket.estado_ticket = "Cerrado"
+    
+    # 2. Dejar constancia en el historial del activo
+    usuario = request.session.get("usuario")
+    desc_cierre = f"TICKET #{id} CERRADO. Solución: {solucion}"
+    registrar_historia(db, ticket.id_activo, "MANTENIMIENTO_CORRECTIVO", desc_cierre, usuario)
+    
+    
+    db.commit()
+    
+    return RedirectResponse("/gestion-novedades?msg=Ticket resuelto exitosamente&tipo=success", status_code=303)

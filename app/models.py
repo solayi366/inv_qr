@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Text
 from sqlalchemy.orm import relationship
 from .database import Base
-import datetime
+from datetime import datetime  # Importación correcta
 
 class Marca(Base):
     __tablename__ = "tab_marca"
@@ -75,11 +75,15 @@ class ActivoTec(Base):
     hijos = relationship("ActivoTec", back_populates="padre")
     
     historial = relationship("Actualizacion", back_populates="activo_rel")
+    
+    # Relación con la nueva tabla de novedades
+    novedades = relationship("Novedad", back_populates="activo")
 
 class Actualizacion(Base):
     __tablename__ = "tab_actualizaciones"
     id_evento = Column(Integer, primary_key=True, index=True)
-    fecha = Column(DateTime, default=datetime.datetime.utcnow)
+    # CORRECCIÓN AQUÍ: Se usa datetime.utcnow directamente, no datetime.datetime.utcnow
+    fecha = Column(DateTime, default=datetime.utcnow)
     id_activo = Column(Integer, ForeignKey("tab_activotec.id_activo"), nullable=False)
     tipo_evento = Column(String(50), nullable=False)
     desc_evento = Column(Text, nullable=False)
@@ -92,3 +96,28 @@ class Usuario(Base):
     id_usuario = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, nullable=False)
     contraseña = Column(String(255), nullable=False)
+
+# --- NUEVA TABLA PARA EL MÓDULO DE REPORTES ---
+class Novedad(Base):
+    __tablename__ = "tab_novedades"
+
+    id_novedad = Column(Integer, primary_key=True, index=True)
+    fecha_reporte = Column(DateTime, default=datetime.now)
+    
+    # Quién reporta
+    cedula_reportante = Column(String(50)) 
+    nombre_reportante = Column(String(100))
+    
+    # Sobre qué activo
+    id_activo = Column(Integer, ForeignKey("tab_activotec.id_activo"))
+    
+    # Detalle
+    tipo_daño = Column(String(50)) 
+    descripcion = Column(String(500))
+    evidencia_foto = Column(String(255)) # Ruta del archivo
+    
+    # Estado del ticket
+    estado_ticket = Column(String(20), default="Pendiente") 
+
+    # Relación
+    activo = relationship("ActivoTec", back_populates="novedades")

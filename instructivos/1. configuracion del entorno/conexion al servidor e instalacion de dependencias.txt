@@ -1,9 +1,0 @@
-1. **cd C:\\SOL\\INV\_QR\\llaves**
-2. **ssh -i "enviabuca.pem" ubuntu@3.128.189.39**
-3. **https://us-east-2.console.aws.amazon.com/ec2-instance-connect/ssh/home?addressFamily=ipv4\&connType=standard\&instanceId=i-0b7b6157e254a3bc4\&osUser=ubuntu\&region=us-east-2\&sshPort=22**
-4. **sudo apt update \&\& sudo apt upgrade -y**
-5. **instalar Python : sudo apt install python3-pip python3-venv git -y**
-6. **drivers de Microsoft : curl https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
-   curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
-   sudo apt update
-   sudo ACCEPT\_EULA=Y apt-get install -y msodbcsql17 sudo apt-get install -y unixodbc-dev**
