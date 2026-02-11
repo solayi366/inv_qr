@@ -9,15 +9,30 @@ router = APIRouter(tags=["Activos"])
 templates = Jinja2Templates(directory="templates")
 
 @router.get("/")
-def pagina_principal(request: Request, page: int = 1, size: int = 50, db: Session = Depends(database.get_db)):
+def pagina_principal(request: Request, page: int = 1, size: int = 20, db: Session = Depends(database.get_db)):
+    # Filtramos para mostrar solo equipos principales (no accesorios)
     query = db.query(models.ActivoTec).filter(models.ActivoTec.id_padre_activo == None)
+    
+    # Calculamos el total y las páginas
     total_count = query.count()
     total_pages = (total_count + size - 1) // size
+    
     if page < 1: page = 1
-    activos = query.order_by(models.ActivoTec.id_activo.desc()).offset((page - 1) * size).limit(size).all()
+    if total_pages > 0 and page > total_pages: page = total_pages
+
+    # Consultamos solo el bloque de la página actual
+    activos = query.order_by(models.ActivoTec.id_activo.desc())\
+                   .offset((page - 1) * size)\
+                   .limit(size).all()
+    
     return templates.TemplateResponse("index.html", {
-        "request": request, "activos": activos, "user": request.session.get("usuario"),
-        "page": page, "total_pages": total_pages, "total_count": total_count, "size": size
+        "request": request, 
+        "activos": activos, 
+        "user": request.session.get("usuario"),
+        "page": page,
+        "total_pages": total_pages,
+        "total_count": total_count,
+        "size": size
     })
 
 @router.get("/ver/{id}")

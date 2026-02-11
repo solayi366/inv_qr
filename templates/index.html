@@ -10,7 +10,8 @@
             <p class="text-slate-500 font-medium mt-1">Gestión centralizada de equipos tecnológicos.</p>
         </div>
         <div class="relative w-full md:w-96 group">
-            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-600 transition-colors"></i>
+            <i
+                class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-600 transition-colors"></i>
             <input type="text" placeholder="Buscar..." id="searchInput" onkeyup="filtrarTabla()"
                 class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium shadow-sm focus:border-brand-600 focus:ring-4 focus:ring-brand-50 outline-none transition-all">
         </div>
@@ -20,7 +21,8 @@
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse" id="tablaActivos">
                 <thead>
-                    <tr class="bg-slate-50/50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <tr
+                        class="bg-slate-50/50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
                         <th class="px-6 py-4">Equipo</th>
                         <th class="px-6 py-4">Marca/Ref</th>
                         <th class="px-6 py-4">Serial / ID</th>
@@ -38,10 +40,12 @@
                             <div class="text-xs text-slate-400">{{ activo.hostname or 'Sin Hostname' }}</div>
                         </td>
                         <td class="px-6 py-4">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                            <span
+                                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
                                 {{ activo.marca.nom_marca }}
                             </span>
-                            <div class="text-xs text-slate-400 mt-1">{{ activo.modelo.nom_modelo if activo.modelo else activo.referencia }}</div>
+                            <div class="text-xs text-slate-400 mt-1">{{ activo.modelo.nom_modelo if activo.modelo else
+                                activo.referencia }}</div>
                         </td>
                         <td class="px-6 py-4">
                             <div class="font-mono font-semibold text-slate-700 text-xs">{{ activo.serial }}</div>
@@ -49,33 +53,45 @@
                         <td class="px-6 py-4">
                             {% if activo.responsable %}
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 text-xs font-bold">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 text-xs font-bold">
                                     {{ activo.responsable.nom_emple[:2] }}
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="font-bold text-slate-800 text-xs truncate max-w-[120px]">{{ activo.responsable.nom_emple }}</p>
-                                    <p class="text-[10px] text-slate-500 uppercase font-bold">{{ activo.responsable.area.nom_area }}</p>
+                                    <p class="font-bold text-slate-800 text-xs truncate max-w-[120px]">{{
+                                        activo.responsable.nom_emple }}</p>
+                                    <p class="text-[10px] text-slate-500 uppercase font-bold">{{
+                                        activo.responsable.area.nom_area }}</p>
                                 </div>
                             </div>
                             {% else %}
-                            <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">
+                            <span
+                                class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-bold">
                                 <i class="fas fa-warehouse"></i> Bodega
                             </span>
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 text-center">
                             {% if activo.estado == 'Bueno' %}
-                                <span class="inline-flex px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">OK</span>
+                            <span
+                                class="inline-flex px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">OK</span>
                             {% elif activo.estado == 'Baja' %}
-                                <span class="inline-flex px-2 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 line-through">BAJA</span>
+                            <span
+                                class="inline-flex px-2 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 line-through">BAJA</span>
                             {% else %}
-                                <span class="inline-flex px-2 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600">{{ activo.estado }}</span>
+                            <span
+                                class="inline-flex px-2 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600">{{
+                                activo.estado }}</span>
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex justify-end gap-1">
-                                <a href="/ver/{{ activo.id_activo }}" class="p-1.5 text-slate-400 hover:text-brand-600 transition-colors"><i class="fas fa-eye"></i></a>
-                                <a href="/editar/{{ activo.id_activo }}" class="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"><i class="fas fa-edit"></i></a>
+                                <a href="/ver/{{ activo.id_activo }}"
+                                    class="p-1.5 text-slate-400 hover:text-brand-600 transition-colors"><i
+                                        class="fas fa-eye"></i></a>
+                                <a href="/editar/{{ activo.id_activo }}"
+                                    class="p-1.5 text-slate-400 hover:text-blue-600 transition-colors"><i
+                                        class="fas fa-edit"></i></a>
                             </div>
                         </td>
                     </tr>
@@ -83,6 +99,37 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <div
+                class="mt-8 flex items-center justify-between bg-white p-5 rounded-3xl border border-slate-200 shadow-xl">
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    Página <span class="text-brand-600">{{ page }}</span> de {{ total_pages }}
+                </div>
+
+                <div class="flex gap-3">
+                    {% if page > 1 %}
+                    <a href="/?page={{ page - 1 }}"
+                        class="px-6 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-black hover:bg-brand-600 hover:text-white transition-all border border-slate-200 shadow-sm">
+                        <i class="fas fa-chevron-left mr-2"></i> Anterior
+                    </a>
+                    {% else %}
+                    <span
+                        class="px-6 py-2 bg-slate-50 text-slate-300 rounded-xl text-xs font-black border border-slate-100 cursor-not-allowed">
+                        <i class="fas fa-chevron-left mr-2"></i> Anterior
+                    </span>
+                    {% endif %}
+
+                    {% if page < total_pages %} <a href="/?page={{ page + 1 }}"
+                        class="px-6 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-black hover:bg-brand-600 hover:text-white transition-all border border-slate-200 shadow-sm">
+                        Siguiente <i class="fas fa-chevron-right ml-2"></i>
+                        </a>
+                        {% else %}
+                        <span
+                            class="px-6 py-2 bg-slate-50 text-slate-300 rounded-xl text-xs font-black border border-slate-100 cursor-not-allowed">
+                            Siguiente <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                        {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
