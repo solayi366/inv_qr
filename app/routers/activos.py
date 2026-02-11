@@ -9,7 +9,7 @@ router = APIRouter(tags=["Activos"])
 templates = Jinja2Templates(directory="templates")
 
 @router.get("/")
-def pagina_principal(request: Request, page: int = 1, size: int = 20, db: Session = Depends(database.get_db)):
+def pagina_principal(request: Request, page: int = 1, size: int = 4, db: Session = Depends(database.get_db)):
     # Filtramos para mostrar solo equipos principales (no accesorios)
     query = db.query(models.ActivoTec).filter(models.ActivoTec.id_padre_activo == None)
     
