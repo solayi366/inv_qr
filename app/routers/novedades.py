@@ -14,7 +14,7 @@ templates = Jinja2Templates(directory="templates")
 SMTP_USER = "solayitapias1@gmail.com" 
 SMTP_PASSWORD = "rrvz xzmd ngaw mxch" 
 EMAIL_DESTINO = "solayitapias1@gmail.com"
-BASE_URL = "https://enviabuca.ddns.net/"
+BASE_URL = "https://inventario.envia06.com/"
 
 def enviar_alerta_email(asunto, mensaje_html):
     try:
